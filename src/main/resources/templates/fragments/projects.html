@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="projects" class="nine columns">
+            <div th:replace="fragments/project/add-modal :: addModal"></div>
+
+            <div th:replace="fragments/project/edit-modal :: editModal"></div>
+
+            <div class="navbar">
+                <div class="row">
+                    <div class="six columns">
+                        <b>Projects</b>
+                    </div>
+                    <div class="six columns text-right">
+                        <button class="button-primary" onclick="projects.showAdd()"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Code</th>
+                            <th>Client</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Notes</th>
+                            <th>Worktimes</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="project : ${projects}" th:id="'project-' + ${project.id}">
+                            <td>
+                                <i class="fas fa-exclamation-triangle" style="color: orange" th:if="${dummyClient.id == project.client.id}"></i>
+                                <span class="name" th:text="${project.name}"></span>
+                            </td>
+                            <td class="code" th:text="${project.code}"></td>
+                            <td class="client" th:text="${project.client.name}" th:data="${project.client.id}"></td>
+                            <td class="status" th:text="${project.status}"></td>
+                            <td class="priority" th:text="${project.priority}"></td>
+                            <td>
+                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'showNotes(' + ${project.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'showWorktimes(' + ${project.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projects.showEdit(' + ${project.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-times cursor-pointer" th:onclick="'projects.showDelete(' + ${project.id} + ',\'' + ${project.name} + '\')'"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,127 @@
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #eee;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1EAEDB;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0FA0CE;
+}
+
+#container {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+}
+
+#container .row, #container .columns {
+    height: 100%;
+}
+
+.modal {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.6);
+
+    z-index: 100;
+}
+
+.modal-window {
+    position: absolute;
+
+    left: 25%;
+    top: 15%;
+
+    border-radius: 4px;
+    padding: 15px;
+
+    width: 50%;
+    max-height: 70%;
+
+    background-color: #fff;
+}
+
+.modal-window form {
+    margin-bottom: 0;
+}
+
+.modal-button {
+    border-top: 1px solid #888;
+
+    padding-top: 15px;
+}
+
+.navbar {
+    position: relative;
+
+    left: 0;
+    top: 0;
+
+    padding: 0 25px;
+
+    width: calc(100% - 50px);
+    height: 80px;
+
+    line-height: 80px;
+    font-size: 24px;
+
+    border-bottom: 1px solid #eee;
+}
+
+.content {
+    position: relative;
+
+    left: 0;
+    top: 0;
+
+    padding: 25px 25px 0 25px;
+
+    width: calc(100% - 50px);
+    height: calc(100% - 106px);
+
+    overflow-y: scroll;
+}
+
+tbody > tr:hover {
+    background-color: #eee;
+}
+
+tbody > tr > td {
+    background-color: inherit;
+}
+
+.hidden {
+    display: none;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-pointer:hover {
+    color: #1EAEDB;
+}

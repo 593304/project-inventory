@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="clients" class="three columns" style="margin-left: 0; width: 26%;">
+            <div th:replace="fragments/client/add-modal :: addModal"></div>
+
+            <div th:replace="fragments/client/list-projects-modal :: listProjectsModal"></div>
+
+            <div th:replace="fragments/client/edit-modal :: editModal"></div>
+
+            <div class="navbar">
+                <div class="row">
+                    <div class="six columns">
+                        <b>Clients</b>
+                    </div>
+                    <div class="six columns text-right">
+                        <button class="button-primary" type="button" onclick="clients.showAdd()"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Alias</th>
+                            <th>Projects</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="client : ${clients}" th:id="'client-' + ${client.id}">
+                            <td class="name" th:text="${client.name}"></td>
+                            <td class="alias" th:text="${client.alias}"></td>
+                            <td>
+                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'clients.showProjects(' + ${client.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'clients.showEdit(' + ${client.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-times cursor-pointer" th:onclick="'clients.showDelete(' + ${client.id} + ',\'' + ${client.name} + '\')'"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

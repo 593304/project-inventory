@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Project Inventory</title>
+
+        <meta http-equiv="content-type" content="text/html" />
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css" />
+        <link rel="stylesheet" th:href="@{/css/normalize.css}" type="text/css" />
+        <link rel="stylesheet" th:href="@{/css/skeleton.css}" type="text/css" />
+        <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css" />
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script defer="defer" src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
+        <script th:src="@{/js/script.js}"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div th:replace="fragments/delete-modal :: deleteModal"></div>
+            <div class="row">
+                <div th:replace="fragments/projects :: projects"></div>
+                <div th:replace="fragments/clients :: clients"></div>
+            </div>
+        </div>
+    </body>
+</html>

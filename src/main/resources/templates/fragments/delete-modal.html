@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="deleteModal"  id="deleteModal" class="modal hidden">
+            <div class="modal-window">
+                <form th:action="@{/}" method="post">
+                    <div class="row">
+                        <div class="twelve columns">
+                            <label>Are you sure you want to delete the selected item?</label>
+                        </div>
+                    </div>
+                    <div class="row modal-button">
+                        <div class="twelve columns">
+                            <button class="button-primary" type="submit">Yes</button>
+                            <button class="button" type="button" onclick="hideDeleteModal()">No</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

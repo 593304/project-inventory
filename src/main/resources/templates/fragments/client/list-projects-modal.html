@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="listProjectsModal"  id="listProjects" class="modal hidden">
+            <div class="modal-window">
+                <div class="row">
+                    <div class="twelve columns">
+                        <table class="u-full-width">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Code</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row modal-button">
+                    <div class="twelve columns">
+                        <button class="button-primary" type="button" onclick="clients.hideProjects()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

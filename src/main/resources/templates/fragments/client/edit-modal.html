@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="editModal"  id="clientEdit" class="modal hidden">
+            <div class="modal-window">
+                <form th:action="@{/clients/edit}" method="post" th:object="${editClientForm}">
+                    <input class="id hidden" type="number" th:field="*{id}"/>
+                    <div class="row">
+                        <div class="six columns">
+                            <label>
+                                Client name
+                                <input class="u-full-width name" type="text" th:field="*{name}" required="true" />
+                            </label>
+                        </div>
+                        <div class="six columns">
+                            <label>
+                                Client alias
+                                <input class="u-full-width alias" type="text" th:field="*{alias}" required="true" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row modal-button">
+                        <div class="twelve columns">
+                            <button class="button-primary" type="submit">Save</button>
+                            <button class="button" type="button" onclick="clients.hideEdit()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="editModal"  id="projectEdit" class="modal hidden">
+            <div class="modal-window">
+                <form th:action="@{/projects/edit}" method="post" th:object="${editProjectForm}">
+                    <input class="id hidden" type="number" th:field="*{id}"/>
+                    <div class="row form-element">
+                        <div class="six columns">
+                            <label>
+                                Project name
+                                <input class="u-full-width name" type="text" th:field="*{name}" required="true" />
+                            </label>
+                        </div>
+                        <div class="six columns">
+                            <label>
+                                Project code
+                                <input class="u-full-width code" type="text" th:field="*{code}" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row form-element">
+                        <div class="six columns">
+                            <label for="projectStatusEdit">Project status</label>
+                            <select id="projectStatusEdit" th:field="*{status}">
+                                <option th:each="myStatus : ${statuses}"
+                                        th:value="${myStatus}"
+                                        th:text="${myStatus}"></option>
+                            </select>
+                        </div>
+                        <div class="six columns">
+                            <label for="projectPriorityEdit">Project priority</label>
+                            <select id="projectPriorityEdit" th:field="*{priority}">
+                                <option th:each="myPriority : ${priorities}"
+                                        th:value="${myPriority}"
+                                        th:text="${myPriority}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-element">
+                        <div id="projectClientEdit" class="twelve columns">
+                            <label>Client name</label>
+                        </div>
+                    </div>
+                    <div class="row modal-button">
+                        <div class="twelve columns">
+                            <button class="button-primary form-element" type="submit">Save</button>
+                            <button class="button form-element" type="button" onclick="projects.hideEdit()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
