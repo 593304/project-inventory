@@ -4,7 +4,7 @@
     <body>
         <div th:fragment="addModal"  id="clientAdd" class="modal hidden">
             <div class="modal-window">
-                <form th:action="@{/clients}" method="post" th:object="${newClientForm}">
+                <form th:action="@{/clients}" method="post" th:object="${clientForm}">
                     <div class="row">
                         <div class="six columns">
                             <label>
@@ -22,7 +22,7 @@
                     <div class="row modal-button">
                         <div class="twelve columns">
                             <button class="button-primary" type="submit">Save</button>
-                            <button class="button" type="button" onclick="clients.hideAdd()">Cancel</button>
+                            <button class="button" type="button" onclick="projectInventory.module.client.hideAdd()">Cancel</button>
                         </div>
                     </div>
                 </form>

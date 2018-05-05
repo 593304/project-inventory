@@ -15,7 +15,7 @@
                         <b>Clients</b>
                     </div>
                     <div class="six columns text-right">
-                        <button class="button-primary" type="button" onclick="clients.showAdd()"><i class="fas fa-plus"></i></button>
+                        <button class="button-primary" type="button" onclick="projectInventory.module.client.showAdd()"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
             </div>
@@ -36,13 +36,13 @@
                             <td class="name" th:text="${client.name}"></td>
                             <td class="alias" th:text="${client.alias}"></td>
                             <td>
-                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'clients.showProjects(' + ${client.id} + ')'"></i>
+                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'projectInventory.module.client.showProjects(' + ${client.id} + ')'"></i>
                             </td>
                             <td>
-                                <i class="fas fa-edit cursor-pointer" th:onclick="'clients.showEdit(' + ${client.id} + ')'"></i>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.client.showEdit(' + ${client.id} + ')'"></i>
                             </td>
                             <td>
-                                <i class="fas fa-times cursor-pointer" th:onclick="'clients.showDelete(' + ${client.id} + ',\'' + ${client.name} + '\')'"></i>
+                                <i class="fas fa-times cursor-pointer" th:onclick="'projectInventory.module.client.showDelete(' + ${client.id} + ',\'' + ${client.name} + '\')'"></i>
                             </td>
                         </tr>
                     </tbody>

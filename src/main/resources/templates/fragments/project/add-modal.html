@@ -4,7 +4,7 @@
     <body>
         <div th:fragment="addModal"  id="projectAdd" class="modal hidden">
             <div class="modal-window">
-                <form th:action="@{/projects}" method="post" th:object="${newProjectForm}">
+                <form th:action="@{/projects}" method="post" th:object="${projectForm}">
                     <div class="row form-element">
                         <div class="six columns">
                             <label>
@@ -50,8 +50,8 @@
                     <div class="row modal-button">
                         <div class="twelve columns">
                             <button class="button-primary form-element" type="submit">Save</button>
-                            <button class="button form-element" type="button" onclick="projects.hideAdd()">Cancel</button>
-                            <button class="button-primary error-element" type="button" onclick="projects.hideAdd()">OK</button>
+                            <button class="button form-element" type="button" onclick="projectInventory.module.project.hideAdd()">Cancel</button>
+                            <button class="button-primary error-element" type="button" onclick="projectInventory.module.project.hideAdd()">OK</button>
                         </div>
                     </div>
                 </form>

@@ -13,7 +13,7 @@
                         <b>Projects</b>
                     </div>
                     <div class="six columns text-right">
-                        <button class="button-primary" onclick="projects.showAdd()"><i class="fas fa-plus"></i></button>
+                        <button class="button-primary" onclick="projectInventory.module.project.showAdd()"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
             </div>
@@ -36,11 +36,12 @@
                     <tbody>
                         <tr th:each="project : ${projects}" th:id="'project-' + ${project.id}">
                             <td>
-                                <i class="fas fa-exclamation-triangle" style="color: orange" th:if="${dummyClient.id == project.client.id}"></i>
+                                <!--<i class="fas fa-exclamation-triangle" style="color: orange" th:if="${dummyClient.id == project.client.id}"></i>-->
+                                <i class="fas fa-exclamation-triangle" style="color: orange" th:if="${project.client == null}"></i>
                                 <span class="name" th:text="${project.name}"></span>
                             </td>
                             <td class="code" th:text="${project.code}"></td>
-                            <td class="client" th:text="${project.client.name}" th:data="${project.client.id}"></td>
+                            <td class="client" th:text="${project.client != null ? project.client.name : '-'}" th:data="${project.client != null ? project.client.id : '-1'}"></td>
                             <td class="status" th:text="${project.status}"></td>
                             <td class="priority" th:text="${project.priority}"></td>
                             <td>
@@ -50,10 +51,10 @@
                                 <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'showWorktimes(' + ${project.id} + ')'"></i>
                             </td>
                             <td>
-                                <i class="fas fa-edit cursor-pointer" th:onclick="'projects.showEdit(' + ${project.id} + ')'"></i>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.project.showEdit(' + ${project.id} + ')'"></i>
                             </td>
                             <td>
-                                <i class="fas fa-times cursor-pointer" th:onclick="'projects.showDelete(' + ${project.id} + ',\'' + ${project.name} + '\')'"></i>
+                                <i class="fas fa-times cursor-pointer" th:onclick="'projectInventory.module.project.showDelete(' + ${project.id} + ',\'' + ${project.name} + '\')'"></i>
                             </td>
                         </tr>
                     </tbody>
