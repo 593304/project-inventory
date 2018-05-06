@@ -20,8 +20,13 @@ public class Client {
     @JsonIgnore
     private List<Project> projects;
 
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Contact> contacts;
+
     public Client() {
         projects = new ArrayList<>();
+        contacts = new ArrayList<>();
     }
 
     public Client(String name, String alias) {
@@ -35,10 +40,11 @@ public class Client {
         this.alias = alias;
     }
 
-    public Client(String name, String alias, List<Project> projects) {
+    public Client(String name, String alias, List<Project> projects, List<Contact> contacts) {
         this.name = name;
         this.alias = alias;
         this.projects = projects;
+        this.contacts = contacts;
     }
 
     public long getId() {
@@ -73,6 +79,14 @@ public class Client {
         this.projects = projects;
     }
 
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(List<Contact> contacts) {
+        this.contacts = contacts;
+    }
+
     @Override
     public String toString() {
         return "Client{" +
@@ -80,6 +94,7 @@ public class Client {
                 ", name='" + name + '\'' +
                 ", alias='" + alias + '\'' +
                 ", projects=" + projects +
+                ", contacts=" + contacts +
                 '}';
     }
 }

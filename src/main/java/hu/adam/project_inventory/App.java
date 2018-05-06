@@ -1,7 +1,8 @@
 package hu.adam.project_inventory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hu.adam.project_inventory.data.JsonWrapper;
+import hu.adam.project_inventory.data.dao.ContactDao;
+import hu.adam.project_inventory.data.json.JsonWrapper;
 import hu.adam.project_inventory.data.dao.ClientDao;
 import hu.adam.project_inventory.data.dao.ProjectDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,13 @@ public class App extends SpringBootServletInitializer {
         App.clientDao = clientDao;
     }
 
+    private static ContactDao contactDao;
+
+    @Autowired
+    private void setClientDao(ContactDao contactDao) {
+        App.contactDao = contactDao;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -71,6 +79,7 @@ public class App extends SpringBootServletInitializer {
 
                 clientDao.save(jsonWrapper.getClients());
                 projectDao.save(jsonWrapper.getProjects());
+                contactDao.save(jsonWrapper.getContacts());
             } else
                 System.out.println("The file is empty!");
         } catch (Exception e) {
@@ -88,6 +97,7 @@ public class App extends SpringBootServletInitializer {
 
             jsonWrapper.setClients(App.clientDao.findAllBy());
             jsonWrapper.setProjects(App.projectDao.findAllBy());
+            jsonWrapper.setContacts(App.contactDao.findAllBy());
 
             ObjectMapper om = new ObjectMapper();
             try {

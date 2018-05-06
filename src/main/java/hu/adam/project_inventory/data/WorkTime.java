@@ -25,7 +25,7 @@ public class WorkTime {
     private Date end;
     private boolean exported;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "project_id", nullable = false)
     @JsonIgnore
     private Project project;

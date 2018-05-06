@@ -10,10 +10,9 @@ public class EditClientForm extends ClientForm {
     public EditClientForm() {
     }
 
-    public EditClientForm(long id, String name, String alias) {
+    public EditClientForm(String name, String alias, long id) {
+        super(name, alias);
         this.id = id;
-        setName(name);
-        setAlias(alias);
     }
 
     public long getId() {
@@ -26,6 +25,9 @@ public class EditClientForm extends ClientForm {
 
     @Override
     public Client getClient() {
-        return new Client(id, getName(), getAlias());
+        Client client = super.getClient();
+        client.setId(id);
+
+        return client;
     }
 }

@@ -25,7 +25,7 @@ public class Note {
     @ElementCollection
     private List<String> comments;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "project_id", nullable = false)
     @JsonIgnore
     private Project project;

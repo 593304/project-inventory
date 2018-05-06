@@ -2,8 +2,8 @@ package hu.adam.project_inventory.form;
 
 import hu.adam.project_inventory.data.Client;
 import hu.adam.project_inventory.data.Project;
-import hu.adam.project_inventory.data.ProjectPriority;
-import hu.adam.project_inventory.data.ProjectStatus;
+import hu.adam.project_inventory.data.enums.ProjectPriority;
+import hu.adam.project_inventory.data.enums.ProjectStatus;
 
 public class EditProjectForm extends ProjectForm {
 
@@ -12,13 +12,9 @@ public class EditProjectForm extends ProjectForm {
     public EditProjectForm() {
     }
 
-    public EditProjectForm(long id, String name, String code, long client, ProjectStatus status, ProjectPriority priority) {
+    public EditProjectForm(String name, String code, long client, ProjectStatus status, ProjectPriority priority, long id) {
+        super(name, code, client, status, priority);
         this.id = id;
-        setName(name);
-        setCode(code);
-        setClient(client);
-        setStatus(status);
-        setPriority(priority);
     }
 
     public long getId() {
@@ -31,6 +27,9 @@ public class EditProjectForm extends ProjectForm {
 
     @Override
     public Project getProject(Client client) {
-        return new Project(id, getName(), getCode(), client, getStatus(), getPriority());
+        Project project = super.getProject(client);
+        project.setId(id);
+
+        return project;
     }
 }

@@ -2,12 +2,10 @@ package hu.adam.project_inventory.controller;
 
 import hu.adam.project_inventory.App;
 import hu.adam.project_inventory.data.Contact;
-import hu.adam.project_inventory.data.Project;
 import hu.adam.project_inventory.data.dao.ClientDao;
 import hu.adam.project_inventory.data.dao.ContactDao;
-import hu.adam.project_inventory.data.dao.ProjectDao;
-import hu.adam.project_inventory.form.ClientForm;
-import hu.adam.project_inventory.form.EditClientForm;
+import hu.adam.project_inventory.form.ContactForm;
+import hu.adam.project_inventory.form.EditContactForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,28 +14,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/clients")
-public class ClientController {
+@RequestMapping("/contacts")
+public class ContactController {
 
     @Autowired
     private ClientDao clientDao;
     @Autowired
-    private ProjectDao projectDao;
-    @Autowired
     private ContactDao contactDao;
 
     @PostMapping("")
-    public String save(@ModelAttribute ClientForm clientForm) {
+    public String save(@ModelAttribute ContactForm contactForm) {
 
-        store(clientForm);
+        store(contactForm);
 
         return "redirect:/";
     }
 
     @PostMapping("/edit")
-    public String edit(@ModelAttribute EditClientForm editClientForm) {
+    public String edit(@ModelAttribute EditContactForm editContactForm) {
 
-        store(editClientForm);
+        store(editContactForm);
 
         return "redirect:/";
     }
@@ -45,26 +41,24 @@ public class ClientController {
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") long id) {
 
-        for(Project project : projectDao.findAllByClient(clientDao.findOne(id))) {
-            project.setClient(null);
-            projectDao.save(project);
-        }
-
-        for(Contact contact : contactDao.findAllByClient(clientDao.findOne(id))) {
-            contact.setClient(null);
-            contactDao.save(contact);
-        }
-
-        clientDao.delete(id);
+        contactDao.delete(id);
 
         App.writeToFile();
 
         return "redirect:/";
     }
 
-    private void store(ClientForm clientForm) {
+    private void store(ContactForm contactForm) {
+        Contact contact = contactForm.getContact(clientDao.findOne(contactForm.getClient()));
 
-        clientDao.save(clientForm.getClient());
+        if(contactForm.getMail().trim().isEmpty())
+            contact.setMail(null);
+        if(contactForm.getPhone().trim().isEmpty())
+            contact.setPhone(null);
+        if(contactForm.getAddress().trim().isEmpty())
+            contact.setAddress(null);
+
+        contactDao.save(contact);
 
         App.writeToFile();
     }

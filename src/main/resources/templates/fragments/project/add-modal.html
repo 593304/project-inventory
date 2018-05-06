@@ -5,7 +5,7 @@
         <div th:fragment="addModal"  id="projectAdd" class="modal hidden">
             <div class="modal-window">
                 <form th:action="@{/projects}" method="post" th:object="${projectForm}">
-                    <div class="row form-element">
+                    <div class="row">
                         <div class="six columns">
                             <label>
                                 Project name
@@ -19,7 +19,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="row form-element">
+                    <div class="row">
                         <div class="six columns">
                             <label for="projectStatusAdd">Project status</label>
                             <select id="projectStatusAdd" th:field="*{status}">
@@ -37,21 +37,20 @@
                             </select>
                         </div>
                     </div>
-                    <div class="row form-element">
+                    <div class="row">
                         <div id="projectClientAdd" class="twelve columns">
-                            <label>Client name</label>
-                        </div>
-                    </div>
-                    <div class="row error-element">
-                        <div class="twelve columns">
-                            <label>Please add at least one client</label>
+                            <label>
+                                Client name
+                                <select class="u-full-width" th:field="*{client}">
+                                    <option value="-1"></option>
+                                </select>
+                            </label>
                         </div>
                     </div>
                     <div class="row modal-button">
                         <div class="twelve columns">
-                            <button class="button-primary form-element" type="submit">Save</button>
-                            <button class="button form-element" type="button" onclick="projectInventory.module.project.hideAdd()">Cancel</button>
-                            <button class="button-primary error-element" type="button" onclick="projectInventory.module.project.hideAdd()">OK</button>
+                            <button class="button-primary" type="submit">Save</button>
+                            <button class="button" type="button" onclick="projectInventory.module.project.hideAdd()">Cancel</button>
                         </div>
                     </div>
                 </form>

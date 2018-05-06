@@ -6,7 +6,7 @@
             <div class="modal-window">
                 <form th:action="@{/projects/edit}" method="post" th:object="${editProjectForm}">
                     <input class="id hidden" type="number" th:field="*{id}"/>
-                    <div class="row form-element">
+                    <div class="row">
                         <div class="six columns">
                             <label>
                                 Project name
@@ -20,7 +20,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="row form-element">
+                    <div class="row">
                         <div class="six columns">
                             <label for="projectStatusEdit">Project status</label>
                             <select id="projectStatusEdit" th:field="*{status}">
@@ -38,15 +38,20 @@
                             </select>
                         </div>
                     </div>
-                    <div class="row form-element">
+                    <div class="row">
                         <div id="projectClientEdit" class="twelve columns">
-                            <label>Client name</label>
+                            <label>
+                                Client name
+                                <select class="u-full-width" th:field="*{client}">
+                                    <option value="-1"></option>
+                                </select>
+                            </label>
                         </div>
                     </div>
                     <div class="row modal-button">
                         <div class="twelve columns">
-                            <button class="button-primary form-element" type="submit">Save</button>
-                            <button class="button form-element" type="button" onclick="projectInventory.module.project.hideEdit()">Cancel</button>
+                            <button class="button-primary" type="submit">Save</button>
+                            <button class="button" type="button" onclick="projectInventory.module.project.hideEdit()">Cancel</button>
                         </div>
                     </div>
                 </form>

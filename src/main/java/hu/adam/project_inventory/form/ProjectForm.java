@@ -2,8 +2,8 @@ package hu.adam.project_inventory.form;
 
 import hu.adam.project_inventory.data.Client;
 import hu.adam.project_inventory.data.Project;
-import hu.adam.project_inventory.data.ProjectPriority;
-import hu.adam.project_inventory.data.ProjectStatus;
+import hu.adam.project_inventory.data.enums.ProjectPriority;
+import hu.adam.project_inventory.data.enums.ProjectStatus;
 
 public class ProjectForm {
 

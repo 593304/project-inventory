@@ -1,4 +1,4 @@
-package hu.adam.project_inventory.data;
+package hu.adam.project_inventory.data.enums;
 
 public enum ProjectStatus {
 

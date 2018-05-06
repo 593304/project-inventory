@@ -1,5 +1,8 @@
 package hu.adam.project_inventory.data;
 
+import hu.adam.project_inventory.data.enums.ProjectPriority;
+import hu.adam.project_inventory.data.enums.ProjectStatus;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +25,9 @@ public class Project {
     private ProjectStatus status;
     private ProjectPriority priority;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Note> notes;
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<WorkTime> workTimes;
 
     public Project() {

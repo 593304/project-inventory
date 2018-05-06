@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="infoModal" id="contactInfoModal" class="modal hidden">
+            <div class="modal-window">
+                <form method="get">
+                    <div class="row">
+                        <div class="two columns">
+                            <div class="row text-right">First name:</div>
+                            <div class="row text-right">Last name:</div>
+                            <div class="row text-right">Client:</div>
+                            <div class="row text-right">Mail:</div>
+                            <div class="row text-right">Phone:</div>
+                            <div class="row text-right">Address:</div>
+                        </div>
+                        <div class="ten columns">
+                            <div class="row first-name"></div>
+                            <div class="row last-name"></div>
+                            <div class="row client"></div>
+                            <div class="row mail"></div>
+                            <div class="row phone"></div>
+                            <div class="row address"></div>
+                        </div>
+                    </div>
+                    <div class="row modal-button">
+                        <div class="twelve columns">
+                            <button class="button-primary" type="button" onclick="projectInventory.module.contact.hideInfo()">Close</button>
+                            <button class="button" type="submit">Download VCard</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

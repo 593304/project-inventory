@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="addModal"  id="contactAdd" class="modal hidden">
+            <div class="modal-window">
+                <form th:action="@{/contacts}" method="post" th:object="${contactForm}">
+                    <div class="row">
+                        <div class="six columns">
+                            <label>
+                                First name
+                                <input class="u-full-width first-name" type="text" th:field="*{firstName}" required="true" />
+                            </label>
+                        </div>
+                        <div class="six columns">
+                            <label>
+                                Last name
+                                <input class="u-full-width last-name" type="text" th:field="*{lastName}" required="true" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="six columns">
+                            <label>
+                                E-mail
+                                <input class="u-full-width mail" type="email" th:field="*{mail}" />
+                            </label>
+                        </div>
+                        <div class="six columns">
+                            <label>
+                                Phone number
+                                <input class="u-full-width phone" type="text" th:field="*{phone}" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="twelve columns">
+                            <label>
+                                Address
+                                <input class="u-full-width address" type="text" th:field="*{address}" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="contactClientAdd" class="twelve columns">
+                            <label>
+                                Client name
+                                <select class="u-full-width" th:field="*{client}">
+                                    <option value="-1"></option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row modal-button">
+                        <div class="twelve columns">
+                            <button class="button-primary" type="submit">Save</button>
+                            <button class="button" type="button" onclick="projectInventory.module.contact.hideAdd()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

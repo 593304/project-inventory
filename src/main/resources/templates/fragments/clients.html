@@ -2,17 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head />
     <body>
-        <div th:fragment="clients" class="three columns" style="margin-left: 0; width: 26%;">
+        <div id="clientSection" th:fragment="clients" class="three columns hidden" style="margin-left: 0; width: 26%;">
             <div th:replace="fragments/client/add-modal :: addModal"></div>
-
             <div th:replace="fragments/client/list-projects-modal :: listProjectsModal"></div>
-
+            <div th:replace="fragments/client/list-contacts-modal :: listContactsModal"></div>
             <div th:replace="fragments/client/edit-modal :: editModal"></div>
 
             <div class="navbar">
                 <div class="row">
-                    <div class="six columns">
+                    <div class="three columns">
                         <b>Clients</b>
+                    </div>
+                    <div class="three columns disabled cursor-pointer" onclick="projectInventory.module.contact.showSection()">
+                        <b>Contacts</b>
                     </div>
                     <div class="six columns text-right">
                         <button class="button-primary" type="button" onclick="projectInventory.module.client.showAdd()"><i class="fas fa-plus"></i></button>
@@ -27,6 +29,7 @@
                             <th>Name</th>
                             <th>Alias</th>
                             <th>Projects</th>
+                            <th>Contacts</th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -37,6 +40,9 @@
                             <td class="alias" th:text="${client.alias}"></td>
                             <td>
                                 <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'projectInventory.module.client.showProjects(' + ${client.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'projectInventory.module.client.showContacts(' + ${client.id} + ')'"></i>
                             </td>
                             <td>
                                 <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.client.showEdit(' + ${client.id} + ')'"></i>

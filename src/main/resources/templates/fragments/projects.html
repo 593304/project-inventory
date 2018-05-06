@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head />
     <body>
-        <div th:fragment="projects" class="nine columns">
+        <div id="projectSection" th:fragment="projects" class="nine columns hidden">
             <div th:replace="fragments/project/add-modal :: addModal"></div>
 
             <div th:replace="fragments/project/edit-modal :: editModal"></div>
@@ -36,7 +36,6 @@
                     <tbody>
                         <tr th:each="project : ${projects}" th:id="'project-' + ${project.id}">
                             <td>
-                                <!--<i class="fas fa-exclamation-triangle" style="color: orange" th:if="${dummyClient.id == project.client.id}"></i>-->
                                 <i class="fas fa-exclamation-triangle" style="color: orange" th:if="${project.client == null}"></i>
                                 <span class="name" th:text="${project.name}"></span>
                             </td>
@@ -51,7 +50,14 @@
                                 <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'showWorktimes(' + ${project.id} + ')'"></i>
                             </td>
                             <td>
-                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.project.showEdit(' + ${project.id} + ')'"></i>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.project.showEdit(' +
+                                    ${project.id} + ',\'' +
+                                    ${project.name} + '\',\'' +
+                                    ${project.code == null ? '-' : project.code} + '\',\'' +
+                                    ${project.client == null ? '-1' : project.client.id} + '\',\'' +
+                                    ${project.status} + '\',\'' +
+                                    ${project.priority} + '\')'">
+                                </i>
                             </td>
                             <td>
                                 <i class="fas fa-times cursor-pointer" th:onclick="'projectInventory.module.project.showDelete(' + ${project.id} + ',\'' + ${project.name} + '\')'"></i>

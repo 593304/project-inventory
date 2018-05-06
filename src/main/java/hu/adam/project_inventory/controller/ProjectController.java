@@ -51,7 +51,7 @@ public class ProjectController {
     private void store(ProjectForm projectForm) {
         Project project = projectForm.getProject(clientDao.findOne(projectForm.getClient()));
 
-        if(projectForm.getCode().isEmpty())
+        if(projectForm.getCode().trim().isEmpty())
             project.setCode(null);
 
         projectDao.save(project);
