@@ -1,5 +1,6 @@
 package hu.adam.project_inventory.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hu.adam.project_inventory.data.enums.ProjectPriority;
 import hu.adam.project_inventory.data.enums.ProjectStatus;
 
@@ -18,16 +19,18 @@ public class Project {
     @Column(unique = true)
     private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
     private ProjectStatus status;
     private ProjectPriority priority;
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Note> notes;
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<WorkTime> workTimes;
 
     public Project() {

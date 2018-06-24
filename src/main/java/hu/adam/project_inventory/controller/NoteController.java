@@ -2,12 +2,10 @@ package hu.adam.project_inventory.controller;
 
 import hu.adam.project_inventory.App;
 import hu.adam.project_inventory.data.Note;
-import hu.adam.project_inventory.data.Project;
-import hu.adam.project_inventory.data.dao.ClientDao;
 import hu.adam.project_inventory.data.dao.NoteDao;
 import hu.adam.project_inventory.data.dao.ProjectDao;
-import hu.adam.project_inventory.form.EditProjectForm;
-import hu.adam.project_inventory.form.ProjectForm;
+import hu.adam.project_inventory.form.EditNoteForm;
+import hu.adam.project_inventory.form.NoteForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,28 +14,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/projects")
-public class ProjectController {
+@RequestMapping("/notes")
+public class NoteController {
 
-    @Autowired
-    private ClientDao clientDao;
     @Autowired
     private ProjectDao projectDao;
     @Autowired
     private NoteDao noteDao;
 
     @PostMapping("")
-    public String save(@ModelAttribute ProjectForm projectForm) {
+    public String save(@ModelAttribute NoteForm noteForm) {
 
-        store(projectForm);
+        store(noteForm);
 
         return "redirect:/";
     }
 
     @PostMapping("/edit")
-    public String edit(@ModelAttribute EditProjectForm editProjectForm) {
+    public String edit(@ModelAttribute EditNoteForm editNoteForm) {
 
-        store(editProjectForm);
+        store(editNoteForm);
 
         return "redirect:/";
     }
@@ -45,25 +41,17 @@ public class ProjectController {
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") long id) {
 
-        for(Note note : noteDao.findAllByProject(projectDao.findOne(id))) {
-            note.setProject(null);
-            noteDao.save(note);
-        }
-
-        projectDao.delete(id);
+        noteDao.delete(id);
 
         App.writeToFile();
 
         return "redirect:/";
     }
 
-    private void store(ProjectForm projectForm) {
-        Project project = projectForm.getProject(clientDao.findOne(projectForm.getClient()));
+    private void store(NoteForm noteForm) {
+        Note note = noteForm.getNote(projectDao.findOne(noteForm.getProject()));
 
-        if(projectForm.getCode().trim().isEmpty())
-            project.setCode(null);
-
-        projectDao.save(project);
+        noteDao.save(note);
 
         App.writeToFile();
     }

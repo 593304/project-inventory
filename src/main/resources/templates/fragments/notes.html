@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div id="noteSection" th:fragment="notes" class="nine columns hidden" style="margin-left: 0;">
+            <div th:replace="fragments/note/add-modal :: addModal"></div>
+
+            <div th:replace="fragments/note/list-comments-modal :: commentsModal"></div>
+
+            <div th:replace="fragments/note/edit-modal :: editModal"></div>
+
+            <div class="navbar">
+                <div class="row">
+                    <div class="two columns disabled cursor-pointer" onclick="projectInventory.module.project.showSection()">
+                        <b>Projects</b>
+                    </div>
+                    <div class="two columns">
+                        <b>Notes</b>
+                    </div>
+                    <div class="two columns disabled cursor-pointer" onclick="projectInventory.module.worktime.showSection()">
+                        <b>Worktimes</b>
+                    </div>
+                    <div class="six columns text-right">
+                        <button class="button-primary" onclick="projectInventory.module.note.showAdd()"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Project</th>
+                            <th>Comments</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="note : ${notes}" th:id="'note-' + ${note.id}">
+                            <td>
+                                <i class="fas fa-exclamation-triangle" style="color: orange" th:if="${note.project == null}"></i>
+                                <span class="date" th:text="${note.getDateAsString()}"></span>
+                            </td>
+                            <td class="project" th:text="${note.project != null ? note.project.name : '-'}" th:data="${note.project != null ? note.project.id : '-1'}"></td>
+                            <td>
+                                <i class="fas fa-external-link-alt cursor-pointer comments" th:onclick="'projectInventory.module.note.showComments(' + ${note.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.note.showEdit(' + ${note.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-times cursor-pointer" th:onclick="'projectInventory.module.note.showDelete(' + ${note.id} + ')'"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

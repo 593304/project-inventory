@@ -7,8 +7,9 @@ import hu.adam.project_inventory.util.DateDeserializer;
 import hu.adam.project_inventory.util.DateSerializer;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -21,22 +22,31 @@ public class Note {
     private long id;
     @JsonSerialize(using = DateSerializer.class)
     @JsonDeserialize(using = DateDeserializer.class)
-    private Date date;
+    private LocalDate date;
     @ElementCollection
     private List<String> comments;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "project_id", nullable = false)
-    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "project_id")
     private Project project;
+
+    @Transient
+    @JsonIgnore
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public Note() {
         comments = new ArrayList<>();
     }
 
-    public Note(Date date, List<String> comments, Project project) {
+    public Note(LocalDate date, List<String> comments, Project project) {
         this.date = date;
         this.comments = comments;
+        this.project = project;
+    }
+
+    public Note(String date, Project project) {
+        this.date = LocalDate.parse(date, formatter);
+        this.comments = new ArrayList<>();
         this.project = project;
     }
 
@@ -48,11 +58,16 @@ public class Note {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    @JsonIgnore
+    public String getDateAsString() {
+        return date.format(formatter);
+    }
+
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -76,7 +91,7 @@ public class Note {
     public String toString() {
         return "Note{" +
                 "id=" + id +
-                ", date=" + date +
+                ", date=" + date.format(formatter) +
                 ", comments=" + comments +
                 ", project=" + project +
                 '}';

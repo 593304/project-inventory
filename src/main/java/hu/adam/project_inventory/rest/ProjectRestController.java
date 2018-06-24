@@ -20,6 +20,11 @@ public class ProjectRestController {
     @Autowired
     private ClientDao clientDao;
 
+    @GetMapping("/list")
+    public List<Project> list() {
+        return projectDao.findAllBy();
+    }
+
     @GetMapping("/list/{client_id}")
     public List<Project> list(@PathVariable("client_id") long client_id) {
         return projectDao.findAllByClient(clientDao.findOne(client_id));

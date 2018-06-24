@@ -1,7 +1,9 @@
 package hu.adam.project_inventory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hu.adam.project_inventory.data.Note;
 import hu.adam.project_inventory.data.dao.ContactDao;
+import hu.adam.project_inventory.data.dao.NoteDao;
 import hu.adam.project_inventory.data.json.JsonWrapper;
 import hu.adam.project_inventory.data.dao.ClientDao;
 import hu.adam.project_inventory.data.dao.ProjectDao;
@@ -33,6 +35,13 @@ public class App extends SpringBootServletInitializer {
     @Autowired
     private void setProjectDao(ProjectDao projectDao) {
         App.projectDao = projectDao;
+    }
+
+    private static NoteDao noteDao;
+
+    @Autowired
+    private void setNoteDao(NoteDao noteDao) {
+        App.noteDao = noteDao;
     }
 
     private static ClientDao clientDao;
@@ -78,8 +87,9 @@ public class App extends SpringBootServletInitializer {
                 JsonWrapper jsonWrapper = objectMapper.readValue(jsonFile, JsonWrapper.class);
 
                 clientDao.save(jsonWrapper.getClients());
-                projectDao.save(jsonWrapper.getProjects());
                 contactDao.save(jsonWrapper.getContacts());
+                projectDao.save(jsonWrapper.getProjects());
+                noteDao.save(jsonWrapper.getNotes());
             } else
                 System.out.println("The file is empty!");
         } catch (Exception e) {
@@ -96,8 +106,9 @@ public class App extends SpringBootServletInitializer {
             JsonWrapper jsonWrapper = new JsonWrapper();
 
             jsonWrapper.setClients(App.clientDao.findAllBy());
-            jsonWrapper.setProjects(App.projectDao.findAllBy());
             jsonWrapper.setContacts(App.contactDao.findAllBy());
+            jsonWrapper.setProjects(App.projectDao.findAllBy());
+            jsonWrapper.setNotes(App.noteDao.findAllByOrderByDateDesc());
 
             ObjectMapper om = new ObjectMapper();
             try {

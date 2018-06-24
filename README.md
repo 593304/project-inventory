@@ -9,6 +9,7 @@ This is a hobby project with embedded webserver and in-memory database using **S
 * [Changelog](#changelog)
   * [Version-0.3.0](#version-0.3.0)
   * [Version-0.4.0](#version-0.4.0)
+  * [Version-0.5.0](#version-0.5.0)
 * [ToDo](#todo)
 
 ## Description
@@ -31,9 +32,15 @@ Runnable version with embedded servlet and in-memory database with the necessary
 
 Extended the project with contact information and fixed client - project on-to-many relationship. So in this version You're able to delete a client without deleting theirs projects or contacts. You can download contact information as a vCard.
 
+### Version-0.5.0
+
+Added every tab to the frontend. Added notes to manage project informations A note is a collections of comments for a specific date. There are some problems with adding notes to the DB at startup.
+
 ## ToDo
 
+- [ ] Scrollable modals
 - [ ] Notes
+   - [ ] Comments
 - [ ] Working times
 - [ ] Working times ics export
 - [ ] Front-end fixes for smaller resolutions

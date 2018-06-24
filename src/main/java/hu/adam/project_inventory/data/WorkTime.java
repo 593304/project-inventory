@@ -5,8 +5,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hu.adam.project_inventory.util.DateDeserializer;
 import hu.adam.project_inventory.util.DateSerializer;
+import hu.adam.project_inventory.util.DateTimeDeserializer;
+import hu.adam.project_inventory.util.DateTimeSerializer;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Entity
@@ -17,23 +22,26 @@ public class WorkTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "work_time_id")
     private long id;
-    @JsonSerialize(using = DateSerializer.class)
-    @JsonDeserialize(using = DateDeserializer.class)
-    private Date start;
-    @JsonSerialize(using = DateSerializer.class)
-    @JsonDeserialize(using = DateDeserializer.class)
-    private Date end;
+    @JsonSerialize(using = DateTimeSerializer.class)
+    @JsonDeserialize(using = DateTimeDeserializer.class)
+    private LocalDateTime start;
+    @JsonSerialize(using = DateTimeSerializer.class)
+    @JsonDeserialize(using = DateTimeDeserializer.class)
+    private LocalDateTime end;
     private boolean exported;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "project_id", nullable = false)
-    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "project_id")
     private Project project;
+
+    @Transient
+    @JsonIgnore
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public WorkTime() {
     }
 
-    public WorkTime(Date start, Date end, boolean exported, Project project) {
+    public WorkTime(LocalDateTime start, LocalDateTime end, boolean exported, Project project) {
         this.start = start;
         this.end = end;
         this.exported = exported;
@@ -48,19 +56,29 @@ public class WorkTime {
         this.id = id;
     }
 
-    public Date getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public void setStart(Date start) {
+    @JsonIgnore
+    public String getStartAsString() {
+        return start.format(formatter);
+    }
+
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
-    public Date getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
-    public void setEnd(Date end) {
+    @JsonIgnore
+    public String getEndAsString() {
+        return end.format(formatter);
+    }
+
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 
@@ -84,8 +102,8 @@ public class WorkTime {
     public String toString() {
         return "WorkTime{" +
                 "id=" + id +
-                ", start=" + start +
-                ", end=" + end +
+                ", start=" + start.format(formatter) +
+                ", end=" + end.format(formatter) +
                 ", exported=" + exported +
                 ", project=" + project +
                 '}';

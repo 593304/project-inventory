@@ -2,15 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head />
     <body>
-        <div id="projectSection" th:fragment="projects" class="nine columns hidden">
+        <div id="projectSection" th:fragment="projects" class="nine columns hidden" style="margin-left: 0;">
             <div th:replace="fragments/project/add-modal :: addModal"></div>
+
+            <div th:replace="fragments/project/list-notes-modal :: listNotesModal"></div>
 
             <div th:replace="fragments/project/edit-modal :: editModal"></div>
 
             <div class="navbar">
                 <div class="row">
-                    <div class="six columns">
+                    <div class="two columns">
                         <b>Projects</b>
+                    </div>
+                    <div class="two columns disabled cursor-pointer" onclick="projectInventory.module.note.showSection()">
+                        <b>Notes</b>
+                    </div>
+                    <div class="two columns disabled cursor-pointer" onclick="projectInventory.module.worktime.showSection()">
+                        <b>Worktimes</b>
                     </div>
                     <div class="six columns text-right">
                         <button class="button-primary" onclick="projectInventory.module.project.showAdd()"><i class="fas fa-plus"></i></button>
@@ -44,20 +52,13 @@
                             <td class="status" th:text="${project.status}"></td>
                             <td class="priority" th:text="${project.priority}"></td>
                             <td>
-                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'showNotes(' + ${project.id} + ')'"></i>
+                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'projectInventory.module.project.showNotes(' + ${project.id} + ')'"></i>
                             </td>
                             <td>
-                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'showWorktimes(' + ${project.id} + ')'"></i>
+                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'projectInventory.module.project.showWorktimes(' + ${project.id} + ')'"></i>
                             </td>
                             <td>
-                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.project.showEdit(' +
-                                    ${project.id} + ',\'' +
-                                    ${project.name} + '\',\'' +
-                                    ${project.code == null ? '-' : project.code} + '\',\'' +
-                                    ${project.client == null ? '-1' : project.client.id} + '\',\'' +
-                                    ${project.status} + '\',\'' +
-                                    ${project.priority} + '\')'">
-                                </i>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.project.showEdit(' + ${project.id} + ')'"></i>
                             </td>
                             <td>
                                 <i class="fas fa-times cursor-pointer" th:onclick="'projectInventory.module.project.showDelete(' + ${project.id} + ',\'' + ${project.name} + '\')'"></i>

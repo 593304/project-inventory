@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div id="worktimeSection" th:fragment="worktimes" class="nine columns hidden" style="margin-left: 0;">
+            <!--<div th:replace="fragments/note/add-modal :: addModal"></div>-->
+
+            <!--<div th:replace="fragments/note/edit-modal :: editModal"></div>-->
+
+            <div class="navbar">
+                <div class="row">
+                    <div class="two columns disabled cursor-pointer" onclick="projectInventory.module.project.showSection()">
+                        <b>Projects</b>
+                    </div>
+                    <div class="two columns disabled cursor-pointer" onclick="projectInventory.module.note.showSection()">
+                        <b>Notes</b>
+                    </div>
+                    <div class="two columns">
+                        <b>Worktimes</b>
+                    </div>
+                    <div class="six columns text-right">
+                        <button class="button-primary" onclick="projectInventory.module.worktime.showAdd()"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Project</th>
+                            <th>Exported</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="worktime : ${worktimes}" th:id="'worktime-' + ${worktime.id}">
+                            <td>
+                                <i class="fas fa-exclamation-triangle" style="color: orange" th:if="${worktime.project == null}"></i>
+                                <span class="start" th:text="${worktime.getStartAsString()}"></span>
+                            </td>
+                            <td class="end" th:text="${worktime.getEndAsString}"></td>
+                            <td class="project" th:text="${worktime.project != null ? worktime.project.name : '-'}" th:data="${worktime.project != null ? worktime.project.id : '-1'}"></td>
+                            <td>
+                                <i class="fas" th:classappend="${worktime} ? 'fa-check' : 'fa-times'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.worktime.showEdit(' + ${worktime.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-times cursor-pointer" th:onclick="'projectInventory.module.worktime.showDelete(' + ${worktime.id} + ')'"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

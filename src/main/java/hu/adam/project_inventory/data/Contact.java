@@ -17,7 +17,7 @@ public class Contact {
     private String phone;
     private String address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 

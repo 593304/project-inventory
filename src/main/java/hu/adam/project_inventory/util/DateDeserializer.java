@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-public class DateDeserializer extends StdDeserializer<Date> {
+public class DateDeserializer extends StdDeserializer<LocalDate> {
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public DateDeserializer() {
         this(null);
@@ -23,11 +23,12 @@ public class DateDeserializer extends StdDeserializer<Date> {
     }
 
     @Override
-    public Date deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-        try {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(jsonParser.getText());
-        } catch (ParseException e) {}
+    public LocalDate deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
 
-        throw new JsonParseException(jsonParser, "Unparseable date: \"" + jsonParser.getText() + "\". Supported format: yyyy-MM-dd HH:mm");
+        try {
+            return LocalDate.parse(jsonParser.getText(), formatter);
+        } catch (Exception e) {}
+
+        throw new JsonParseException(jsonParser, "Unparseable date: \"" + jsonParser.getText() + "\". Supported format: yyyy-MM-dd");
     }
 }

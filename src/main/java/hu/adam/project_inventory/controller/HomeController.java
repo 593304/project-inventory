@@ -1,6 +1,7 @@
 package hu.adam.project_inventory.controller;
 
 import hu.adam.project_inventory.data.dao.ContactDao;
+import hu.adam.project_inventory.data.dao.NoteDao;
 import hu.adam.project_inventory.data.enums.ProjectPriority;
 import hu.adam.project_inventory.data.enums.ProjectStatus;
 import hu.adam.project_inventory.data.dao.ClientDao;
@@ -23,6 +24,8 @@ public class HomeController {
     private ProjectDao projectDao;
     @Autowired
     private ContactDao contactDao;
+    @Autowired
+    private NoteDao noteDao;
 
     @GetMapping("")
     public String home(Map<String, Object> model) {
@@ -33,10 +36,13 @@ public class HomeController {
         model.put("editProjectForm", new EditProjectForm());
         model.put("contactForm", new ContactForm());
         model.put("editContactForm", new EditContactForm());
+        model.put("noteForm", new NoteForm());
+        model.put("editNoteForm", new EditNoteForm());
 
         model.put("clients", clientDao.findAllBy());
         model.put("projects", projectDao.findAllBy());
         model.put("contacts", contactDao.findAllBy());
+        model.put("notes", noteDao.findAllByOrderByDateDesc());
 
         model.put("statuses", ProjectStatus.values());
         model.put("priorities", ProjectPriority.values());

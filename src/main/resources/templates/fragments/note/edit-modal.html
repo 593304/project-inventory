@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="editModal"  id="noteEdit" class="modal hidden">
+            <div class="modal-window">
+                <form th:action="@{/notes/edit}" method="post" th:object="${editNoteForm}">
+                    <input class="id hidden" type="number" th:field="*{id}" />
+                    <div class="row">
+                        <div class="four columns">
+                            <label>
+                                Date
+                                <input class="u-full-width date" type="text" th:field="*{date}" required="true" />
+                            </label>
+                        </div>
+                        <div id="noteProjectEdit" class="eight columns">
+                            <label>
+                                Project name
+                                <select class="u-full-width project" th:field="*{project}">
+                                    <option value="-1">-</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row modal-button">
+                        <div class="twelve columns">
+                            <button class="button-primary" type="submit">Save</button>
+                            <button class="button" type="button" onclick="projectInventory.module.note.hideEdit()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

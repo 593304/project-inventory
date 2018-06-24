@@ -56,6 +56,27 @@
     background-color: #fff;
 }
 
+.modal-window.scroll {
+    height: calc(70% - 30px);
+}
+
+.modal-content.scroll {
+    position: absolute;
+
+    width: calc(100% - 30px);
+    height: calc(100% - 98px) !important;
+
+    overflow-y: scroll;
+}
+
+.modal-content.small.scroll {
+    height: calc(100% - 168px) !important;
+}
+
+.modal-content.scroll table {
+    margin-bottom: 0;
+}
+
 .modal-window form {
     margin-bottom: 0;
 }
@@ -64,6 +85,22 @@
     border-top: 1px solid #888;
 
     padding-top: 15px;
+}
+
+.modal-button.scroll {
+    position: absolute;
+
+    left: 0;
+    bottom: 0px;
+
+    padding-left: 15px;
+
+    width: calc(100% - 15px);
+    height: 53px !important;
+}
+
+.modal-button.first.scroll {
+    bottom: 70px !important;
 }
 
 .navbar {
@@ -127,4 +164,20 @@ tbody > tr > td {
 
 .disabled {
     color: #AAA;
+}
+
+#commentsList .row {
+    margin-bottom: 5px;
+}
+
+#commentsList .row:hover {
+    background-color: #eee;
+}
+
+td > ul {
+    margin-bottom: 0;
+}
+
+td li:last-child {
+    margin-bottom: 0;
 }

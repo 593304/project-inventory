@@ -136,7 +136,9 @@ projectInventory.app = (function() {
 
     tabNames = {
         left : {
-            PROJECT : 'PROJECT'
+            PROJECT : 'PROJECT',
+            NOTE : 'NOTE',
+            WORKTIME : 'WORKTIME'
         },
         right : {
             CLIENT : 'CLIENT',
@@ -146,6 +148,8 @@ projectInventory.app = (function() {
 
     sectionSelectors = {
         PROJECT : '#projectSection',
+        NOTE : '#noteSection',
+        WORKTIME : '#worktimeSection',
         CLIENT : '#clientSection',
         CONTACT : '#contactSection'
     },
@@ -250,6 +254,39 @@ projectInventory.app = (function() {
 }());
 
 projectInventory.module = {};
+
+projectInventory.module.modal = (function() {
+    var
+
+    _show = function(modalName, enableScrolling) {
+        $(modalName).removeClass('hidden');
+
+        if(enableScrolling) {
+            var height = $(window).height() * 0.7 - 30;
+
+            if(height < $(modalName + ' .modal-window').height()) {
+                $(modalName + ' .modal-window').addClass('scroll');
+                $(modalName + ' .modal-content').addClass('scroll');
+                $(modalName + ' .modal-button').addClass('scroll');
+            }
+        }
+    },
+
+    _hide = function(modalName, disableScrolling) {
+        $(modalName).addClass('hidden');
+
+        if(disableScrolling) {
+            $(modalName + ' .modal-window').removeClass('scroll');
+            $(modalName + ' .modal-content').removeClass('scroll');
+            $(modalName + ' .modal-button').removeClass('scroll');
+        }
+    };
+
+    return {
+        show : _show,
+        hide : _hide
+    };
+}());
 
 projectInventory.module.client = (function() {
     var moduleName = 'projectInventory.module.client',
@@ -499,7 +536,7 @@ projectInventory.module.contact = (function () {
     },
 
     elements = {
-        defaultOptionElement : '<option value="-1"></option>',
+        defaultOptionElement : '<option value="-1">-</option>',
         optionElement : '<option value="{id}">{name}</option>'
     },
 
@@ -679,10 +716,14 @@ projectInventory.module.project = (function() {
     var moduleName = 'projectInventory.module.project',
 
     selectors = {
+        projectSection: '#projectSection',
+        noteSection: '#noteSection',
+        worktimeSection: '#worktimeSection',
         projectAdd: '#projectAdd',
         projectClientAdd: '#projectClientAdd',
         projectStatusAdd : '#projectStatusAdd',
         projectPriorityAdd : '#projectPriorityAdd',
+        listNotes: '#listNotes',
         projectEdit: '#projectEdit',
         projectClientEdit: '#projectClientEdit',
         projectStatusEdit : '#projectStatusEdit',
@@ -694,8 +735,23 @@ projectInventory.module.project = (function() {
     },
 
     elements = {
-        defaultOptionElement : '<option value="-1"></option>',
-        optionElement : '<option value="{id}">{name}</option>'
+        defaultOptionElement : '<option value="-1">-</option>',
+        optionElement : '<option value="{id}">{name}</option>',
+        emptyNoteListRow : '<tr><td colspan="2">No projects found for this client</td></tr>',
+        errorNoteListRow : '<tr><td colspan="2">Cannot retrieve project list for this client</td></tr>',
+        noteListRow : '<tr><td>{date}</td><td><ul>{comments}</ul></td></tr>',
+        commentListElement : '<li>{comment}</li>'
+    },
+
+    _showSection = function() {
+        var functionName = moduleName + '.showSection';
+        logger.debug(functionName, 'Opening project section');
+
+        $(selectors.projectSection).removeClass('hidden');
+        $(selectors.noteSection).addClass('hidden');
+        $(selectors.worktimeSection).addClass('hidden');
+
+        projectInventory.app.updateActiveTab('left', projectInventory.app.getTabNames().left.PROJECT);
     },
 
     createClientSelection = function() {
@@ -703,7 +759,11 @@ projectInventory.module.project = (function() {
         logger.debug(functionName, "Getting client list");
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + "/clients/list")
+            $.ajax({
+                url : projectInventory.app.appPath + "/clients/list",
+                method : 'GET',
+                timeout : 200
+            })
                 .done(function (data) {
                     logger.info(functionName, 'Found clients: ' + JSON.stringify(data));
 
@@ -740,19 +800,21 @@ projectInventory.module.project = (function() {
                 logger.info(functionName, 'Opening modal with client selection');
 
                 $(selectors.projectClientAdd + ' select').append(element);
+
+                projectInventory.module.modal.show(selectors.projectAdd, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty client selection');
-            });
 
-        $(selectors.projectAdd).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.projectAdd, false);
+            });
     },
 
     _hideAdd = function() {
         var functionName = moduleName + '.hideAdd';
         logger.debug(functionName, 'Closing add project modal');
 
-        $(selectors.projectAdd).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.projectAdd, false);
 
         logger.info(functionName, 'Setting default form values for add project modal');
 
@@ -762,35 +824,111 @@ projectInventory.module.project = (function() {
         $(selectors.projectPriorityAdd).val($(selectors.projectPriorityAdd + ' option')[0].value);
     },
 
-    _showEdit = function(id, name, code, client, status, priority) {
+    getNotes = function(id) {
+        var functionName = moduleName + '.getNotes';
+        logger.debug(functionName, "Getting note list");
+
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                url : projectInventory.app.appPath + "/notes/list/" + id,
+                method : 'GET',
+                timeout : 200
+            })
+                .done(function (data) {
+                    logger.info(functionName, 'Found notes: ' + JSON.stringify(data));
+
+                    if (data.length == 0) {
+                        logger.info(functionName, 'No notes found!');
+                        reject(elements.emptyNoteListRow);
+                    }
+
+                    var result = '';
+
+                    $(data).each(function () {
+                        var comments = '';
+
+                        if(this.comments.length > 0) {
+                            $(this.comments).each(function() {
+                                comments += elements.commentListElement.replace('{comment}', this);
+                            });
+                        } else
+                            comments = '-';
+
+                        result += elements.noteListRow
+                            .replace('{date}', this.date)
+                            .replace('{comments}', comments);
+                    });
+
+                    logger.info(functionName, 'Notes: ' + result);
+
+                    resolve(result);
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject(elements.errorNoteListRow);
+                });
+        });
+    },
+
+    _showNotes = function(id) {
+        var functionName = moduleName + '.showNotes';
+        logger.debug(functionName, "Opening note list");
+
+        getNotes(id).then(
+            function(element) {
+                $(selectors.listNotes + ' tbody').html(element);
+
+                projectInventory.module.modal.show(selectors.listNotes, true);
+            },
+            function(element) {
+                $(selectors.listNotes + ' tbody').html(element);
+
+                projectInventory.module.modal.show(selectors.listNotes, false);
+            });
+    },
+
+    _hideNotes = function() {
+        var functionName = moduleName + '.showNotes';
+        logger.debug(functionName, "Closing note list");
+
+        projectInventory.module.modal.hide(selectors.listNotes);
+
+        $(selectors.listNotes + ' tbody').html('');
+    },
+
+    _showEdit = function(id) {
         var functionName = moduleName + '.showEdit';
         logger.debug(functionName, 'Opening edit project modal');
 
+        var selectedRow = selectors.project + id;
+
         $(selectors.projectEdit + ' .id').val(id);
-        $(selectors.projectEdit + ' .name').val(name);
-        $(selectors.projectEdit + ' .code').val(code);
-        $(selectors.projectStatusEdit).val(status);
-        $(selectors.projectPriorityEdit).val(priority);
+        $(selectors.projectEdit + ' .name').val($(selectedRow + ' .name').html());
+        $(selectors.projectEdit + ' .code').val($(selectedRow + ' .code').html());
+        $(selectors.projectStatusEdit).val($(selectedRow + ' .status').html());
+        $(selectors.projectPriorityEdit).val($(selectedRow + ' .priority').html());
 
         createClientSelection().then(
             function(element) {
                 logger.info(functionName, 'Opening modal with client selection');
 
                 $(selectors.projectClientEdit + ' select').append(element);
-                $(selectors.projectClientEdit + ' select').val(client);
+                $(selectors.projectClientEdit + ' select').val($(selectedRow + ' .client').attr('data'));
+
+                projectInventory.module.modal.show(selectors.projectEdit, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty client selection');
-            });
 
-        $(selectors.projectEdit).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.projectEdit, false);
+            });
     },
 
     _hideEdit = function() {
         var functionName = moduleName + '.hideEdit';
         logger.debug(functionName, 'Closing edit project modal');
 
-        $(selectors.projectEdit).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.projectEdit, false);
 
         logger.info(functionName, 'Setting default form values for edit project modal');
 
@@ -808,6 +946,357 @@ projectInventory.module.project = (function() {
 
         $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/projects/delete/' + id);
         $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.project.hideDelete()');
+        projectInventory.module.modal.show(selectors.deleteModal, false);
+    },
+
+    _hideDelete = function() {
+        var functionName = moduleName + '.hideDeleteModal';
+        logger.debug(functionName, 'Closing delete modal');
+
+        projectInventory.module.modal.hide(selectors.deleteModal, false);
+        $(selectors.deleteModal + ' :button').attr('onclick', '');
+    };
+
+    return {
+        showSection : _showSection,
+        showAdd : _showAdd,
+        hideAdd : _hideAdd,
+        showNotes : _showNotes,
+        hideNotes : _hideNotes,
+        showEdit : _showEdit,
+        hideEdit : _hideEdit,
+        showDelete : _showDelete,
+        hideDelete : _hideDelete
+    }
+}());
+
+projectInventory.module.note = (function() {
+    var moduleName = 'projectInventory.module.note', lastNoteId,
+
+    selectors = {
+        projectSection: '#projectSection',
+        noteSection: '#noteSection',
+        worktimeSection: '#worktimeSection',
+        noteAdd: '#noteAdd',
+        noteProjectAdd: '#noteProjectAdd',
+        note: '#note-',
+        commentsModal: '#commentsModal',
+        commentsList: '#commentsList',
+        noteCommentAdd: '#noteCommentAdd',
+        noteComment: '#noteComment',
+        comment: '#comment-',
+        noteEdit: '#noteEdit',
+        noteProjectEdit: '#noteProjectEdit',
+        deleteModal : '#deleteModal'
+    },
+
+    elements = {
+        defaultOptionElement : '<option value="-1">-</option>',
+        optionElement : '<option value="{id}">{name}</option>',
+        commentElement : '' +
+            '<div id="comment-{id}" class="row">' +
+                '<div class="eleven columns">{comment}</div>' +
+                '<div class="one column">' +
+                    '<i class="fas fa-times cursor-pointer" onclick="projectInventory.module.note.deleteComment(\'{id}\', \'{comment}\')"></i>' +
+                '</div>' +
+            '</div>'
+    },
+
+    _showSection = function() {
+        var functionName = moduleName + '.showSection';
+        logger.debug(functionName, 'Opening project section');
+
+        $(selectors.projectSection).addClass('hidden');
+        $(selectors.noteSection).removeClass('hidden');
+        $(selectors.worktimeSection).addClass('hidden');
+
+        projectInventory.app.updateActiveTab('left', projectInventory.app.getTabNames().left.NOTE);
+    },
+
+    getDate = function() {
+        var functionName = moduleName + '.getDate';
+        logger.debug(functionName, "Getting date from server");
+
+        return new Promise(function(resolve, reject) {
+            $.get(projectInventory.app.appPath + "/home/now/date")
+                .done(function(data) {
+                    logger.info(functionName, "Date: " + data);
+
+                    resolve(data);
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject();
+                });
+        });
+    },
+
+    createProjectSelection = function() {
+        var functionName = moduleName + '.createProjectSelection';
+        logger.debug(functionName, "Getting project list");
+
+        return new Promise(function(resolve, reject) {
+            $.get(projectInventory.app.appPath + "/projects/list")
+                .done(function (data) {
+                    logger.info(functionName, 'Found projects: ' + JSON.stringify(data));
+
+                    if (data.length == 0) {
+                        logger.info(functionName, 'No projects found!');
+                        reject();
+                    }
+
+                    var result = '';
+
+                    $(data).each(function () {
+                        result += elements.optionElement
+                            .replace('{id}', this.id)
+                            .replace('{name}', this.name);
+                    });
+
+                    logger.info(functionName, 'Option elements: ' + result);
+
+                    resolve(result);
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject();
+                });
+        });
+    },
+
+    _showAdd = function() {
+        var functionName = moduleName + '.showAdd';
+        logger.debug(functionName, 'Opening add project modal');
+
+        getDate().then(
+            function(date) {
+                logger.info(functionName, 'Opening modal with date info');
+
+                $(selectors.noteAdd + ' .date').val(date);
+            },
+            function() {
+                logger.info(functionName, 'Opening modal without date info');
+            });
+
+        createProjectSelection().then(
+            function(element) {
+                logger.info(functionName, 'Opening modal with project selection');
+
+                $(selectors.noteProjectAdd + ' select').append(element);
+            },
+            function() {
+                logger.info(functionName, 'Opening modal with empty project selection');
+            });
+
+        $(selectors.noteAdd).removeClass('hidden');
+    },
+
+    _hideAdd = function() {
+        var functionName = moduleName + '.hideAdd';
+        logger.debug(functionName, 'Closing add note modal');
+
+        $(selectors.noteAdd).addClass('hidden');
+
+        logger.info(functionName, 'Setting default form values for add note modal');
+
+        $(selectors.noteProjectAdd + ' select').html(elements.defaultOptionElement);
+        $(selectors.noteAdd + ' input').val('');
+    },
+
+    getComments = function(id) {
+        var functionName = moduleName + '.getComments';
+        logger.debug(functionName, "Getting comments from server");
+
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                url : projectInventory.app.appPath + "/notes/comment/get/" + id,
+                method : 'GET',
+                timeout : 200
+            })
+                .done(function(data) {
+                    logger.info(functionName, "Comments: " + data);
+
+                    if(data.length == 0) {
+                        logger.info(functionName, 'No comments found!');
+                        reject();
+                    }
+
+                    var result = '';
+
+                    for(var i = 0; i < data.length; i++) {
+                        result += elements.commentElement
+                            .replace(/{id}/g, i)
+                            .replace(/{comment}/g, data[i]);
+                    }
+
+                    resolve(result);
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject();
+                });
+        });
+    },
+
+    _showComments = function(id) {
+        var functionName = moduleName + '.showComments';
+        logger.debug(functionName, 'Opening comments modal');
+
+        lastNoteId = id;
+
+        getComments(id).then(
+            function(elements) {
+                logger.info(functionName, 'Opening modal with comments');
+
+                $(selectors.commentsList).append(elements);
+
+                projectInventory.module.modal.show(selectors.commentsModal, true);
+            },
+            function() {
+                logger.info(functionName, 'Opening modal without comments');
+
+                projectInventory.module.modal.show(selectors.commentsModal, true);
+            });
+    },
+
+    _showAddComment = function() {
+        var functionName = moduleName + '.showAddComment';
+        logger.debug(functionName, 'Showing add comment section');
+
+        $(selectors.noteCommentAdd).removeClass('hidden');
+
+        if(!$(selectors.commentsModal + ' .modal-window').hasClass('scroll')) {
+            var height = $(window).height() * 0.7 - 30;
+
+            if (height < $(selectors.commentsModal + ' .modal-window').height()) {
+                $(selectors.commentsModal + ' .modal-window').addClass('scroll');
+                $(selectors.commentsModal + ' .modal-content').addClass('scroll');
+                $(selectors.commentsModal + ' .modal-button').addClass('scroll');
+            }
+        } else
+            $(selectors.commentsModal + ' .modal-content').addClass('small');
+    },
+
+    _addComment = function() {
+        var functionName = moduleName + '.addComment';
+        logger.debug(functionName, 'Adding comment');
+
+        var comment = $(selectors.noteComment).val();
+
+        $.post({
+            url : projectInventory.app.appPath + '/notes/comment/add',
+            contentType : "application/json",
+            data : JSON.stringify({
+                noteId : lastNoteId,
+                comment : comment
+            })
+        })
+            .done(function() {
+                logger.info(functionName, 'Comment added successfully');
+
+                $(selectors.commentsList).append(
+                    elements.commentElement
+                        .replace(/{id}/g, $(selectors.commentsList + ' .row').length)
+                        .replace(/{comment}/g, comment));
+
+                $(selectors.noteComment).val('');
+            })
+            .fail(function() {
+                logger.error(functionName, 'Cannot reach the server');
+            });
+    },
+
+    _deleteComment = function(id, comment) {
+        var functionName = moduleName + '.deleteComment';
+        logger.debug(functionName, 'Deleting comment');
+
+        $.post({
+            url : projectInventory.app.appPath + '/notes/comment/delete',
+            contentType : "application/json",
+            data : JSON.stringify({
+                noteId : lastNoteId,
+                comment : comment
+            })
+        })
+            .done(function() {
+                logger.info(functionName, 'Comment deleted successfully');
+
+                $(selectors.comment + id).remove();
+            })
+            .fail(function() {
+                logger.error(functionName, 'Cannot reach the server');
+            });
+    },
+
+    _hideAddComment = function() {
+        var functionName = moduleName + '.hideAddComment';
+        logger.debug(functionName, 'Hiding add comment section');
+
+        $(selectors.noteCommentAdd).addClass('hidden');
+
+        logger.info(functionName, 'Setting default values for add comment section');
+
+        $(selectors.commentsModal + ' input').val('');
+    },
+
+    _hideComments = function() {
+        var functionName = moduleName + '.hideComments';
+        logger.debug(functionName, 'Closing comments modal');
+
+        lastNoteId = -1;
+
+        $(selectors.commentsModal).addClass('hidden');
+        $(selectors.noteCommentAdd).addClass('hidden');
+
+        logger.info(functionName, 'Setting default values for comments modal');
+
+        $(selectors.commentsList).html('');
+        $(selectors.commentsModal + ' input').val('');
+    },
+
+    _showEdit = function(id) {
+        var functionName = moduleName + '.showEdit';
+        logger.debug(functionName, 'Opening edit note modal');
+
+        var selectedRow = selectors.note + id;
+
+        $(selectors.noteEdit + ' .id').val(id);
+        $(selectors.noteEdit + ' .date').val($(selectedRow + ' .date').html());
+
+        createProjectSelection().then(
+            function(element) {
+                logger.info(functionName, 'Opening modal with project selection');
+
+                $(selectors.noteProjectEdit + ' select').append(element);
+                $(selectors.noteProjectEdit + ' select').val($(selectedRow + ' .project').attr('data'));
+            },
+            function() {
+                logger.info(functionName, 'Opening modal with empty project selection');
+            });
+
+        $(selectors.noteEdit).removeClass('hidden');
+    },
+
+    _hideEdit = function() {
+        var functionName = moduleName + '.hideEdit';
+        logger.debug(functionName, 'Closing edit note modal');
+
+        $(selectors.noteEdit).addClass('hidden');
+
+        logger.info(functionName, 'Setting default form values for edit note modal');
+
+        $(selectors.noteProjectEdit + ' select').html(elements.defaultOptionElement);
+        $(selectors.noteEdit + ' input').val('');
+    },
+
+    _showDelete = function(id) {
+        var functionName = moduleName + '.showDelete';
+        logger.debug(functionName, 'Opening delete note modal');
+
+        logger.info(functionName, 'Project selected for delete: [ ' + id + ', ' + name + ' ]');
+
+        $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/notes/delete/' + id);
+        $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.note.hideDelete()');
         $(selectors.deleteModal).removeClass('hidden');
     },
 
@@ -820,12 +1309,44 @@ projectInventory.module.project = (function() {
     };
 
     return {
+        showSection : _showSection,
         showAdd : _showAdd,
         hideAdd : _hideAdd,
+        showComments : _showComments,
+        showAddComment : _showAddComment,
+        addComment : _addComment,
+        deleteComment : _deleteComment,
+        hideAddComment : _hideAddComment,
+        hideComments : _hideComments,
         showEdit : _showEdit,
         hideEdit : _hideEdit,
         showDelete : _showDelete,
         hideDelete : _hideDelete
+    }
+}());
+
+projectInventory.module.worktime = (function() {
+    var moduleName = 'projectInventory.module.worktime',
+
+    selectors = {
+        projectSection: '#projectSection',
+        noteSection: '#noteSection',
+        worktimeSection: '#worktimeSection'
+    },
+
+    _showSection = function() {
+        var functionName = moduleName + '.showSection';
+        logger.debug(functionName, 'Opening project section');
+
+        $(selectors.projectSection).addClass('hidden');
+        $(selectors.noteSection).addClass('hidden');
+        $(selectors.worktimeSection).removeClass('hidden');
+
+        projectInventory.app.updateActiveTab('left', projectInventory.app.getTabNames().left.WORKTIME);
+    };
+
+    return {
+        showSection : _showSection
     }
 }());
 

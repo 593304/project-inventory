@@ -6,9 +6,13 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-public class DateSerializer extends StdSerializer<Date> {
+public class DateSerializer extends StdSerializer<LocalDate> {
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public DateSerializer() {
         this(null);
@@ -19,7 +23,7 @@ public class DateSerializer extends StdSerializer<Date> {
     }
 
     @Override
-    public void serialize(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeString(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date));
+    public void serialize(LocalDate date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        jsonGenerator.writeString(date.format(formatter));
     }
 }

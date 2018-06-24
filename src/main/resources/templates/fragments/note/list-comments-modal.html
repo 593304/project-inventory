@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="commentsModal" id="commentsModal" class="modal hidden">
+            <div class="modal-window">
+                <div class="row modal-content">
+                    <p><b>Comments</b></p>
+                    <div id="commentsList"></div>
+                </div>
+                <div id="noteCommentAdd" class="row modal-button first hidden">
+                    <div class="eight columns">
+                        <input id="noteComment" class="u-full-width" type="text" />
+                    </div>
+                    <div class="four columns">
+                        <button class="button-primary" type="button" onclick="projectInventory.module.note.addComment()">Add</button>
+                        <button class="button" type="button" onclick="projectInventory.module.note.hideAddComment()">Hide</button>
+                    </div>
+                </div>
+                <div class="row modal-button second">
+                    <div class="twelve columns">
+                        <button class="button-primary" type="button" onclick="projectInventory.module.note.hideComments()">Close</button>
+                        <button class="button" type="button" onclick="projectInventory.module.note.showAddComment()">Add comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
