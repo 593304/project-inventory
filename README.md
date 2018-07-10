@@ -7,10 +7,10 @@ This is a hobby project with embedded webserver and in-memory database using **S
 * [Description](#description)
 * [Usage](#usage)
 * [Changelog](#changelog)
-  * [Version-0.3.0](#version-0.3.0)
-  * [Version-0.4.0](#version-0.4.0)
-  * [Version-0.5.0](#version-0.5.0)
-  * [Version-0.5.5](#version-0.5.5)
+  * [Version-0.3.0](#version-030)
+  * [Version-0.4.0](#version-040)
+  * [Version-0.5.0](#version-050)
+  * [Version-0.5.5](#version-055)
 * [ToDo](#todo)
 
 ## Description
