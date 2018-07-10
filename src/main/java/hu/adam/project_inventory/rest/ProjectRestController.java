@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,6 +28,10 @@ public class ProjectRestController {
 
     @GetMapping("/list/{client_id}")
     public List<Project> list(@PathVariable("client_id") long client_id) {
-        return projectDao.findAllByClient(clientDao.findOne(client_id));
+
+        if(clientDao.findById(client_id).isPresent())
+            return projectDao.findAllByClient(clientDao.findById(client_id).get());
+        else
+            return new ArrayList<>();
     }
 }

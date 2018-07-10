@@ -1,7 +1,7 @@
 package hu.adam.project_inventory.controller;
 
-import hu.adam.project_inventory.App;
 import hu.adam.project_inventory.data.Note;
+import hu.adam.project_inventory.data.Project;
 import hu.adam.project_inventory.data.dao.NoteDao;
 import hu.adam.project_inventory.data.dao.ProjectDao;
 import hu.adam.project_inventory.form.EditNoteForm;
@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/notes")
@@ -41,18 +43,20 @@ public class NoteController {
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") long id) {
 
-        noteDao.delete(id);
-
-        App.writeToFile();
+        noteDao.deleteById(id);
 
         return "redirect:/";
     }
 
     private void store(NoteForm noteForm) {
-        Note note = noteForm.getNote(projectDao.findOne(noteForm.getProject()));
+        Optional<Project> project = projectDao.findById(noteForm.getProject());
+        Note note;
+
+        if(project.isPresent())
+            note = noteForm.getNote(project.get());
+        else
+            note = noteForm.getNote(null);
 
         noteDao.save(note);
-
-        App.writeToFile();
     }
 }

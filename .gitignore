@@ -4,4 +4,7 @@
 *.iml
 
 target/
-projects.json
+
+*.log
+*.gz
+*.db

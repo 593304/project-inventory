@@ -1,6 +1,6 @@
 package hu.adam.project_inventory.controller;
 
-import hu.adam.project_inventory.App;
+import hu.adam.project_inventory.data.Client;
 import hu.adam.project_inventory.data.Note;
 import hu.adam.project_inventory.data.Project;
 import hu.adam.project_inventory.data.dao.ClientDao;
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/projects")
@@ -45,26 +47,30 @@ public class ProjectController {
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") long id) {
 
-        for(Note note : noteDao.findAllByProject(projectDao.findOne(id))) {
-            note.setProject(null);
-            noteDao.save(note);
+        if(projectDao.findById(id).isPresent()) {
+            for (Note note : noteDao.findAllByProject(projectDao.findById(id).get())) {
+                note.setProject(null);
+                noteDao.save(note);
+            }
+
+            projectDao.deleteById(id);
         }
-
-        projectDao.delete(id);
-
-        App.writeToFile();
 
         return "redirect:/";
     }
 
     private void store(ProjectForm projectForm) {
-        Project project = projectForm.getProject(clientDao.findOne(projectForm.getClient()));
+        Optional<Client> client = clientDao.findById(projectForm.getClient());
+        Project project;
+
+        if(client.isPresent())
+            project = projectForm.getProject(client.get());
+        else
+            project = projectForm.getProject(null);
 
         if(projectForm.getCode().trim().isEmpty())
             project.setCode(null);
 
         projectDao.save(project);
-
-        App.writeToFile();
     }
 }

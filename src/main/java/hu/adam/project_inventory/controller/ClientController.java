@@ -1,6 +1,5 @@
 package hu.adam.project_inventory.controller;
 
-import hu.adam.project_inventory.App;
 import hu.adam.project_inventory.data.Contact;
 import hu.adam.project_inventory.data.Project;
 import hu.adam.project_inventory.data.dao.ClientDao;
@@ -45,19 +44,19 @@ public class ClientController {
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") long id) {
 
-        for(Project project : projectDao.findAllByClient(clientDao.findOne(id))) {
-            project.setClient(null);
-            projectDao.save(project);
+        if(clientDao.findById(id).isPresent()) {
+            for (Project project : projectDao.findAllByClient(clientDao.findById(id).get())) {
+                project.setClient(null);
+                projectDao.save(project);
+            }
+
+            for (Contact contact : contactDao.findAllByClient(clientDao.findById(id).get())) {
+                contact.setClient(null);
+                contactDao.save(contact);
+            }
+
+            clientDao.deleteById(id);
         }
-
-        for(Contact contact : contactDao.findAllByClient(clientDao.findOne(id))) {
-            contact.setClient(null);
-            contactDao.save(contact);
-        }
-
-        clientDao.delete(id);
-
-        App.writeToFile();
 
         return "redirect:/";
     }
@@ -65,7 +64,5 @@ public class ClientController {
     private void store(ClientForm clientForm) {
 
         clientDao.save(clientForm.getClient());
-
-        App.writeToFile();
     }
 }

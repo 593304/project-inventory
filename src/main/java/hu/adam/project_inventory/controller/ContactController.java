@@ -1,6 +1,6 @@
 package hu.adam.project_inventory.controller;
 
-import hu.adam.project_inventory.App;
+import hu.adam.project_inventory.data.Client;
 import hu.adam.project_inventory.data.Contact;
 import hu.adam.project_inventory.data.dao.ClientDao;
 import hu.adam.project_inventory.data.dao.ContactDao;
@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/contacts")
@@ -41,15 +43,19 @@ public class ContactController {
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") long id) {
 
-        contactDao.delete(id);
-
-        App.writeToFile();
+        contactDao.deleteById(id);
 
         return "redirect:/";
     }
 
     private void store(ContactForm contactForm) {
-        Contact contact = contactForm.getContact(clientDao.findOne(contactForm.getClient()));
+        Optional<Client> client = clientDao.findById(contactForm.getClient());
+        Contact contact;
+
+        if(client.isPresent())
+            contact = contactForm.getContact(client.get());
+        else
+            contact = contactForm.getContact(null);
 
         if(contactForm.getMail().trim().isEmpty())
             contact.setMail(null);
@@ -59,7 +65,5 @@ public class ContactController {
             contact.setAddress(null);
 
         contactDao.save(contact);
-
-        App.writeToFile();
     }
 }

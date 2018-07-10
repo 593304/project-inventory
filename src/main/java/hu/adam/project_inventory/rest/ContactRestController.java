@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -40,12 +41,20 @@ public class ContactRestController {
 
     @GetMapping("/list/{client_id}")
     public List<Contact> list(@PathVariable("client_id") long client_id) {
-        return contactDao.findAllByClient(clientDao.findOne(client_id));
+
+        if(clientDao.findById(client_id).isPresent())
+            return contactDao.findAllByClient(clientDao.findById(client_id).get());
+        else
+            return new ArrayList<>();
     }
 
     @GetMapping("/vcard/{id}")
     public ResponseEntity<Resource> downloadVCard(@PathVariable("id") long id) {
-        Contact contact = contactDao.findOne(id);
+
+        if(!contactDao.findById(id).isPresent())
+            return ResponseEntity.noContent().build();
+
+        Contact contact = contactDao.findById(id).get();
         byte[] vCard = VCardUtil.getVCardString(
                 "",
                 contact.getFirstName(),

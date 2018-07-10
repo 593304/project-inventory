@@ -1,10 +1,7 @@
 package hu.adam.project_inventory.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import hu.adam.project_inventory.util.DateDeserializer;
-import hu.adam.project_inventory.util.DateSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -20,8 +17,7 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "note_id")
     private long id;
-    @JsonSerialize(using = DateSerializer.class)
-    @JsonDeserialize(using = DateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
     @ElementCollection
     private List<String> comments;

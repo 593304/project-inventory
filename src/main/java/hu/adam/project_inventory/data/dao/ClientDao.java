@@ -10,5 +10,4 @@ import java.util.List;
 @Transactional
 public interface ClientDao extends CrudRepository<Client, Long>, JpaSpecificationExecutor<Client> {
     List<Client> findAllBy();
-    List<Client> findAllByIdIsNot(long client_id);
 }

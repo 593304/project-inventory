@@ -737,8 +737,8 @@ projectInventory.module.project = (function() {
     elements = {
         defaultOptionElement : '<option value="-1">-</option>',
         optionElement : '<option value="{id}">{name}</option>',
-        emptyNoteListRow : '<tr><td colspan="2">No projects found for this client</td></tr>',
-        errorNoteListRow : '<tr><td colspan="2">Cannot retrieve project list for this client</td></tr>',
+        emptyNoteListRow : '<tr><td colspan="2">No notes found for this project</td></tr>',
+        errorNoteListRow : '<tr><td colspan="2">Cannot retrieve note list for this project</td></tr>',
         noteListRow : '<tr><td>{date}</td><td><ul>{comments}</ul></td></tr>',
         commentListElement : '<li>{comment}</li>'
     },

@@ -1,18 +1,11 @@
 package hu.adam.project_inventory.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import hu.adam.project_inventory.util.DateDeserializer;
-import hu.adam.project_inventory.util.DateSerializer;
-import hu.adam.project_inventory.util.DateTimeDeserializer;
-import hu.adam.project_inventory.util.DateTimeSerializer;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @Entity
 @Table(name = "work_time")
@@ -22,12 +15,11 @@ public class WorkTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "work_time_id")
     private long id;
-    @JsonSerialize(using = DateTimeSerializer.class)
-    @JsonDeserialize(using = DateTimeDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime start;
-    @JsonSerialize(using = DateTimeSerializer.class)
-    @JsonDeserialize(using = DateTimeDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime end;
+    private String description;
     private boolean exported;
 
     @ManyToOne
@@ -41,10 +33,11 @@ public class WorkTime {
     public WorkTime() {
     }
 
-    public WorkTime(LocalDateTime start, LocalDateTime end, boolean exported, Project project) {
+    public WorkTime(LocalDateTime start, LocalDateTime end, String description, boolean exported, Project project) {
         this.start = start;
         this.end = end;
         this.exported = exported;
+        this.description = description;
         this.project = project;
     }
 
@@ -80,6 +73,14 @@ public class WorkTime {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isExported() {
