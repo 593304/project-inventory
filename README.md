@@ -11,6 +11,7 @@ This is a hobby project with embedded webserver and in-memory database using **S
   * [Version-0.4.0](#version-040)
   * [Version-0.5.0](#version-050)
   * [Version-0.5.5](#version-055)
+  * [Version-0.5.8](#version-058)
 * [ToDo](#todo)
 
 ## Description
@@ -41,11 +42,15 @@ Added every tab to the frontend. Added notes to manage project informations A no
 
 Upgraded to Spring Boot version 2.0.3 and changed JSON based database storing to H2 file based database storing. Added description field for worktime.
 
+### Version-0.5.8
+
+Fixed scrollbars in modals, but need to fix them when resizing window.
+
 ## ToDo
 
 - [ ] Scrollable modals
-- [ ] Notes
-   - [ ] Comments
+- [x] Notes
+   - [x] Comments
 - [ ] Working times
 - [ ] Working times ics export
 - [ ] Front-end fixes for smaller resolutions

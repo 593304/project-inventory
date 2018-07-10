@@ -1172,9 +1172,10 @@ projectInventory.module.note = (function() {
                 $(selectors.commentsModal + ' .modal-window').addClass('scroll');
                 $(selectors.commentsModal + ' .modal-content').addClass('scroll');
                 $(selectors.commentsModal + ' .modal-button').addClass('scroll');
+
+                $(selectors.commentsModal + ' .modal-content').addClass('small');
             }
-        } else
-            $(selectors.commentsModal + ' .modal-content').addClass('small');
+        }
     },
 
     _addComment = function() {
@@ -1200,6 +1201,18 @@ projectInventory.module.note = (function() {
                         .replace(/{comment}/g, comment));
 
                 $(selectors.noteComment).val('');
+
+                if(!$(selectors.commentsModal + ' .modal-window').hasClass('scroll')) {
+                    var height = $(window).height() * 0.7 - 30;
+
+                    if (height < $(selectors.commentsModal + ' .modal-window').height()) {
+                        $(selectors.commentsModal + ' .modal-window').addClass('scroll');
+                        $(selectors.commentsModal + ' .modal-content').addClass('scroll');
+                        $(selectors.commentsModal + ' .modal-button').addClass('scroll');
+
+                        $(selectors.commentsModal + ' .modal-content').addClass('small');
+                    }
+                }
             })
             .fail(function() {
                 logger.error(functionName, 'Cannot reach the server');
@@ -1222,6 +1235,18 @@ projectInventory.module.note = (function() {
                 logger.info(functionName, 'Comment deleted successfully');
 
                 $(selectors.comment + id).remove();
+
+                if($(selectors.commentsModal + ' .modal-window').hasClass('scroll')) {
+                    var height = $(window).height() * 0.7 - 30;
+
+                    if (height >= $(selectors.commentsModal + ' .modal-window').height()) {
+                        $(selectors.commentsModal + ' .modal-window').removeClass('scroll');
+                        $(selectors.commentsModal + ' .modal-content').removeClass('scroll');
+                        $(selectors.commentsModal + ' .modal-button').removeClass('scroll');
+
+                        $(selectors.commentsModal + ' .modal-content').removeClass('small');
+                    }
+                }
             })
             .fail(function() {
                 logger.error(functionName, 'Cannot reach the server');
@@ -1234,6 +1259,18 @@ projectInventory.module.note = (function() {
 
         $(selectors.noteCommentAdd).addClass('hidden');
 
+        if($(selectors.commentsModal + ' .modal-window').hasClass('scroll')) {
+            var height = $(window).height() * 0.7 - 30;
+
+            if (height >= $(selectors.commentsModal + ' .modal-window').height()) {
+                $(selectors.commentsModal + ' .modal-window').removeClass('scroll');
+                $(selectors.commentsModal + ' .modal-content').removeClass('scroll');
+                $(selectors.commentsModal + ' .modal-button').removeClass('scroll');
+
+                $(selectors.commentsModal + ' .modal-content').removeClass('small');
+            }
+        }
+
         logger.info(functionName, 'Setting default values for add comment section');
 
         $(selectors.commentsModal + ' input').val('');
@@ -1245,7 +1282,9 @@ projectInventory.module.note = (function() {
 
         lastNoteId = -1;
 
-        $(selectors.commentsModal).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.commentsModal, true);
+        $(selectors.commentsModal + ' .modal-content').removeClass('small');
+
         $(selectors.noteCommentAdd).addClass('hidden');
 
         logger.info(functionName, 'Setting default values for comments modal');

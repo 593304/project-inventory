@@ -6,7 +6,7 @@
 
     <groupId>hu.adam</groupId>
     <artifactId>project-inventory</artifactId>
-    <version>0.5.5</version>
+    <version>0.5.8</version>
     <packaging>jar</packaging>
 
     <parent>
