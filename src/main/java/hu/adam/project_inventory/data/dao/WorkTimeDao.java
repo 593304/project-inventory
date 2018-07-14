@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 public interface WorkTimeDao extends CrudRepository<WorkTime, Long>, JpaSpecificationExecutor<WorkTime> {
+    List<WorkTime> findAllByOrderByStartDescProjectAsc();
 }

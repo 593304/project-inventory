@@ -12,6 +12,7 @@ This is a hobby project with embedded webserver and in-memory database using **S
   * [Version-0.5.0](#version-050)
   * [Version-0.5.5](#version-055)
   * [Version-0.5.8](#version-058)
+  * [Version-0.6.0](#version-060)
 * [ToDo](#todo)
 
 ## Description
@@ -46,12 +47,17 @@ Upgraded to Spring Boot version 2.0.3 and changed JSON based database storing to
 
 Fixed scrollbars in modals, but need to fix them when resizing window.
 
+### Version-0.6.0
+
+Added the basics of working times. Now can add, edit or delete worktimes.
+
 ## ToDo
 
 - [ ] Scrollable modals
 - [x] Notes
    - [x] Comments
-- [ ] Working times
-- [ ] Working times ics export
+- [x] Working times
+   - [ ] ICS export
+   - [ ] CSV export
 - [ ] Front-end fixes for smaller resolutions
 - [ ] Search

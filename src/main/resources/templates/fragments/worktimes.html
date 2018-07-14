@@ -3,9 +3,9 @@
     <head />
     <body>
         <div id="worktimeSection" th:fragment="worktimes" class="nine columns hidden" style="margin-left: 0;">
-            <!--<div th:replace="fragments/note/add-modal :: addModal"></div>-->
+            <div th:replace="fragments/worktime/add-modal :: addModal"></div>
 
-            <!--<div th:replace="fragments/note/edit-modal :: editModal"></div>-->
+            <div th:replace="fragments/worktime/edit-modal :: editModal"></div>
 
             <div class="navbar">
                 <div class="row">
@@ -18,7 +18,8 @@
                     <div class="two columns">
                         <b>Worktimes</b>
                     </div>
-                    <div class="six columns text-right">
+                    <div class="six columns text-right button-group">
+                        <button class="button-primary" onclick="projectInventory.module.worktime.showExport()"><i class="fas fa-external-link-alt"></i></button>
                         <button class="button-primary" onclick="projectInventory.module.worktime.showAdd()"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
@@ -31,6 +32,7 @@
                             <th>Start</th>
                             <th>End</th>
                             <th>Project</th>
+                            <th>Description</th>
                             <th>Exported</th>
                             <th></th>
                             <th></th>
@@ -40,12 +42,17 @@
                         <tr th:each="worktime : ${worktimes}" th:id="'worktime-' + ${worktime.id}">
                             <td>
                                 <i class="fas fa-exclamation-triangle" style="color: orange" th:if="${worktime.project == null}"></i>
-                                <span class="start" th:text="${worktime.getStartAsString()}"></span>
+                                <span class="start-date" th:text="${worktime.getStartDateAsString()}" style="margin-right: 6px;"></span>
+                                <span class="start-time" th:text="${worktime.getStartTimeAsString()}"></span>
                             </td>
-                            <td class="end" th:text="${worktime.getEndAsString}"></td>
-                            <td class="project" th:text="${worktime.project != null ? worktime.project.name : '-'}" th:data="${worktime.project != null ? worktime.project.id : '-1'}"></td>
                             <td>
-                                <i class="fas" th:classappend="${worktime} ? 'fa-check' : 'fa-times'"></i>
+                                <span class="end-date" th:text="${worktime.getEndDateAsString()}" style="margin-right: 6px;"></span>
+                                <span class="end-time" th:text="${worktime.getEndTimeAsString()}"></span>
+                            </td>
+                            <td class="project" th:text="${worktime.project != null ? worktime.project.name : '-'}" th:data="${worktime.project != null ? worktime.project.id : '-1'}"></td>
+                            <td class="description" th:text="${worktime.description}"></td>
+                            <td>
+                                <i class="fas" th:classappend="${worktime.exported} ? 'fa-check' : 'fa-times'"></i>
                             </td>
                             <td>
                                 <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.worktime.showEdit(' + ${worktime.id} + ')'"></i>

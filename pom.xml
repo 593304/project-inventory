@@ -6,7 +6,7 @@
 
     <groupId>hu.adam</groupId>
     <artifactId>project-inventory</artifactId>
-    <version>0.5.8</version>
+    <version>0.6.0</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -23,6 +23,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-java8time</artifactId>
+            <version>3.0.1.RELEASE</version>
         </dependency>
 
         <dependency>

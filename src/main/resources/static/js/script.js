@@ -13,6 +13,8 @@ projectInventory.logger = (function() {
 
     defaultLevel = DEBUG,
 
+    deafultLevelStringLength = 6, defaultFunctionNameLength = 34,
+
     compareToLogLevel = function(level) {
         if(defaultLevel == DEBUG) {
             if(level != DEBUG)
@@ -65,8 +67,8 @@ projectInventory.logger = (function() {
         var levelColor;
         var levelString;
 
-        if(myLevel.length < 6)
-            levelString = ' '.repeat(6 - myLevel.length) + myLevel;
+        if(myLevel.length < deafultLevelStringLength)
+            levelString = ' '.repeat(deafultLevelStringLength - myLevel.length) + myLevel;
         else
             levelString = myLevel;
 
@@ -85,8 +87,19 @@ projectInventory.logger = (function() {
                 break;
         }
 
-        if(functionName.length < 65)
-            functionName = functionName + ' '.repeat(65 - functionName.length);
+        if(functionName.length > defaultFunctionNameLength) {
+            var functionNameSlices = functionName.split('.');
+            functionName = '';
+
+            for(var i = 0; i < functionNameSlices.length - 1; i++) {
+                functionName += functionNameSlices[i].charAt(0) + '.';
+            }
+
+            functionName += functionNameSlices[functionNameSlices.length - 1];
+        }
+
+        if(functionName.length < defaultFunctionNameLength)
+            functionName = functionName + ' '.repeat(defaultFunctionNameLength - functionName.length);
 
         console.log('%c%s - %c[%s] %s %c: %s',
             timeColor, date(),
@@ -1066,7 +1079,7 @@ projectInventory.module.note = (function() {
 
     _showAdd = function() {
         var functionName = moduleName + '.showAdd';
-        logger.debug(functionName, 'Opening add project modal');
+        logger.debug(functionName, 'Opening add note modal');
 
         getDate().then(
             function(date) {
@@ -1332,7 +1345,7 @@ projectInventory.module.note = (function() {
         var functionName = moduleName + '.showDelete';
         logger.debug(functionName, 'Opening delete note modal');
 
-        logger.info(functionName, 'Project selected for delete: [ ' + id + ', ' + name + ' ]');
+        logger.info(functionName, 'Note selected for delete: [ ' + id + ', ' + name + ' ]');
 
         $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/notes/delete/' + id);
         $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.note.hideDelete()');
@@ -1370,7 +1383,18 @@ projectInventory.module.worktime = (function() {
     selectors = {
         projectSection: '#projectSection',
         noteSection: '#noteSection',
-        worktimeSection: '#worktimeSection'
+        worktimeSection: '#worktimeSection',
+        worktimeAdd: '#worktimeAdd',
+        worktimeProjectAdd: '#worktimeProjectAdd',
+        worktime: '#worktime-',
+        worktimeEdit: '#worktimeEdit',
+        worktimeProjectEdit: '#worktimeProjectEdit',
+        deleteModal : '#deleteModal'
+    },
+
+    elements = {
+        defaultOptionElement : '<option value="-1">-</option>',
+        optionElement : '<option value="{id}">{name}</option>'
     },
 
     _showSection = function() {
@@ -1382,10 +1406,224 @@ projectInventory.module.worktime = (function() {
         $(selectors.worktimeSection).removeClass('hidden');
 
         projectInventory.app.updateActiveTab('left', projectInventory.app.getTabNames().left.WORKTIME);
+    },
+
+    _showExport = function() {
+        // ToDo
+    },
+
+    getDateTimeFrom = function(startDatetime, plusHours) {
+        var functionName = moduleName + '.getDateTimeFrom';
+        logger.debug(functionName, "Getting datetime from server");
+
+        return new Promise(function(resolve, reject) {
+            $.get(projectInventory.app.appPath + "/home/now/datetime/" + startDatetime + '/' + plusHours)
+                .done(function(data) {
+                    logger.info(functionName, "Datetime: " + data);
+
+                    resolve({
+                        date : data.split(' ')[0],
+                        time : data.split(' ')[1]
+                    });
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject();
+                });
+        });
+    },
+
+    _updateEndDateTime = function(element) {
+        var functionName = moduleName + '.updateEndDateTime';
+
+        var startDate = $('#' + element + ' .start-date').val();
+        var startTime = $('#' + element + ' .start-time').val();
+
+        getDateTimeFrom(startDate + ' ' + startTime, 1).then(
+            function(datetime) {
+                logger.debug(functionName, 'Setting end datetime for ' + element);
+
+                $('#' + element + ' .end-date').val(datetime.date);
+                $('#' + element + ' .end-time').val(datetime.time);
+            },
+            function() {
+                logger.info(functionName, 'Cannot get datetime info');
+            });
+    },
+
+    getDateTime = function(plusHours) {
+        var functionName = moduleName + '.getDateTime';
+        logger.debug(functionName, "Getting datetime from server");
+
+        return new Promise(function(resolve, reject) {
+            $.get(projectInventory.app.appPath + "/home/now/datetime/" + plusHours)
+                .done(function(data) {
+                    logger.info(functionName, "Datetime: " + data);
+
+                    resolve({
+                        date : data.split(' ')[0],
+                        time : data.split(' ')[1]
+                    });
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject();
+                });
+        });
+    },
+
+    createProjectSelection = function() {
+        var functionName = moduleName + '.createProjectSelection';
+        logger.debug(functionName, "Getting project list");
+
+        return new Promise(function(resolve, reject) {
+            $.get(projectInventory.app.appPath + "/projects/list")
+                .done(function (data) {
+                    logger.info(functionName, 'Found projects: ' + JSON.stringify(data));
+
+                    if (data.length == 0) {
+                        logger.info(functionName, 'No projects found!');
+                        reject();
+                    }
+
+                    var result = '';
+
+                    $(data).each(function () {
+                        result += elements.optionElement
+                            .replace('{id}', this.id)
+                            .replace('{name}', this.name);
+                    });
+
+                    logger.info(functionName, 'Option elements: ' + result);
+
+                    resolve(result);
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject();
+                });
+        });
+    },
+
+    _showAdd = function() {
+        var functionName = moduleName + '.showAdd';
+        logger.debug(functionName, 'Opening add worktime modal');
+
+        getDateTime(0).then(
+            function(datetime) {
+                logger.info(functionName, 'Opening modal with start date info');
+
+                $(selectors.worktimeAdd + ' .start-date').val(datetime.date);
+                $(selectors.worktimeAdd + ' .start-time').val(datetime.time);
+            },
+            function() {
+                logger.info(functionName, 'Opening modal without start date info');
+            });
+
+        getDateTime(1).then(
+            function(datetime) {
+                logger.info(functionName, 'Opening modal with end date info');
+
+                $(selectors.worktimeAdd + ' .end-date').val(datetime.date);
+                $(selectors.worktimeAdd + ' .end-time').val(datetime.time);
+            },
+            function() {
+                logger.info(functionName, 'Opening modal without end date info');
+            });
+
+        createProjectSelection().then(
+            function(element) {
+                logger.info(functionName, 'Opening modal with project selection');
+
+                $(selectors.worktimeProjectAdd + ' select').append(element);
+            },
+            function() {
+                logger.info(functionName, 'Opening modal with empty project selection');
+            });
+
+        $(selectors.worktimeAdd).removeClass('hidden');
+    },
+
+    _hideAdd = function() {
+        var functionName = moduleName + '.hideAdd';
+        logger.debug(functionName, 'Closing add worktime modal');
+
+        $(selectors.worktimeAdd).addClass('hidden');
+
+        logger.info(functionName, 'Setting default form values for add worktime modal');
+
+        $(selectors.worktimeProjectAdd + ' select').html(elements.defaultOptionElement);
+        $(selectors.worktimeAdd + ' input').val('');
+    },
+
+    _showEdit = function(id) {
+        var functionName = moduleName + '.showEdit';
+        logger.debug(functionName, 'Opening edit worktime modal');
+
+        var selectedRow = selectors.worktime + id;
+
+        $(selectors.worktimeEdit + ' .id').val(id);
+        $(selectors.worktimeEdit + ' .start-date').val($(selectedRow + ' .start-date').html());
+        $(selectors.worktimeEdit + ' .start-time').val($(selectedRow + ' .start-time').html());
+        $(selectors.worktimeEdit + ' .end-date').val($(selectedRow + ' .end-date').html());
+        $(selectors.worktimeEdit + ' .end-time').val($(selectedRow + ' .end-time').html());
+        $(selectors.worktimeEdit + ' .description').val($(selectedRow + ' .description').html());
+
+        createProjectSelection().then(
+            function(element) {
+                logger.info(functionName, 'Opening modal with project selection');
+
+                $(selectors.worktimeProjectEdit + ' select').append(element);
+                $(selectors.worktimeProjectEdit + ' select').val($(selectedRow + ' .project').attr('data'));
+            },
+            function() {
+                logger.info(functionName, 'Opening modal with empty project selection');
+            });
+
+        $(selectors.worktimeEdit).removeClass('hidden');
+    },
+
+    _hideEdit = function() {
+        var functionName = moduleName + '.hideEdit';
+        logger.debug(functionName, 'Closing edit worktime modal');
+
+        $(selectors.worktimeEdit).addClass('hidden');
+
+        logger.info(functionName, 'Setting default form values for edit worktime modal');
+
+        $(selectors.worktimeProjectEdit + ' select').html(elements.defaultOptionElement);
+        $(selectors.worktimeEdit + ' input').val('');
+    },
+
+    _showDelete = function(id) {
+        var functionName = moduleName + '.showDelete';
+        logger.debug(functionName, 'Opening delete worktime modal');
+
+        logger.info(functionName, 'Worktime selected for delete: [ ' + id + ' ]');
+
+        $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/worktimes/delete/' + id);
+        $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.worktime.hideDelete()');
+        $(selectors.deleteModal).removeClass('hidden');
+    },
+
+    _hideDelete = function() {
+        var functionName = moduleName + '.hideDeleteModal';
+        logger.debug(functionName, 'Closing delete modal');
+
+        $(selectors.deleteModal).addClass('hidden');
+        $(selectors.deleteModal + ' :button').attr('onclick', '');
     };
 
     return {
-        showSection : _showSection
+        showSection : _showSection,
+        showExport: _showExport,
+        updateEndDateTime: _updateEndDateTime,
+        showAdd : _showAdd,
+        hideAdd : _hideAdd,
+        showEdit : _showEdit,
+        hideEdit : _hideEdit,
+        showDelete : _showDelete,
+        hideDelete : _hideDelete
     }
 }());
 

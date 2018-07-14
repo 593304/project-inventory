@@ -181,3 +181,33 @@ td > ul {
 td li:last-child {
     margin-bottom: 0;
 }
+
+.button-group {
+    font-size: 0;
+}
+
+.button-group > button {
+    border-right: 1px solid #fff;
+
+    border-radius: 0;
+
+    font-size: 11px;
+}
+
+.button-group > button:hover {
+    border-right: 1px solid #fff;
+}
+
+.button-group > button:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.button-group > button:last-child {
+    border-right: 0;
+
+    border-radius: 0 4px 4px 0;
+}
+
+.button-group > button:last-child:hover {
+    border-right: 0;
+}

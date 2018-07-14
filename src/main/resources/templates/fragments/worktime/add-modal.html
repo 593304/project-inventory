@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="addModal"  id="worktimeAdd" class="modal hidden">
+            <div class="modal-window">
+                <form th:action="@{/worktimes}" method="post" th:object="${worktimeForm}">
+                    <div class="row">
+                        <div class="seven columns">
+                            <label>
+                                Start date
+                                <input class="u-full-width start-date" type="date" th:field="*{startDate}" required="true" onchange="projectInventory.module.worktime.updateEndDateTime('worktimeAdd')" />
+                            </label>
+                        </div>
+                        <div class="five columns">
+                            <label>
+                                Start time
+                                <input class="u-full-width start-time" type="time" th:field="*{startTime}" required="true" onchange="projectInventory.module.worktime.updateEndDateTime('worktimeAdd')" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="seven columns">
+                            <label>
+                                End date
+                                <input class="u-full-width end-date" type="date" th:field="*{endDate}" required="true" />
+                            </label>
+                        </div>
+                        <div class="five columns">
+                            <label>
+                                End time
+                                <input class="u-full-width end-time" type="time" th:field="*{endTime}" required="true" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="twelve columns">
+                            <label>
+                                Description
+                                <input class="u-full-width description" type="text" th:field="*{description}" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="worktimeProjectAdd" class="twelve columns">
+                            <label>
+                                Project name
+                                <select class="u-full-width project" th:field="*{project}">
+                                    <option value="-1">-</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row modal-button">
+                        <div class="twelve columns">
+                            <button class="button-primary" type="submit">Save</button>
+                            <button class="button" type="button" onclick="projectInventory.module.worktime.hideAdd()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

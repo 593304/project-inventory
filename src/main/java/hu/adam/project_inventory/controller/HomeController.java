@@ -1,11 +1,8 @@
 package hu.adam.project_inventory.controller;
 
-import hu.adam.project_inventory.data.dao.ContactDao;
-import hu.adam.project_inventory.data.dao.NoteDao;
+import hu.adam.project_inventory.data.dao.*;
 import hu.adam.project_inventory.data.enums.ProjectPriority;
 import hu.adam.project_inventory.data.enums.ProjectStatus;
-import hu.adam.project_inventory.data.dao.ClientDao;
-import hu.adam.project_inventory.data.dao.ProjectDao;
 import hu.adam.project_inventory.form.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +23,8 @@ public class HomeController {
     private ContactDao contactDao;
     @Autowired
     private NoteDao noteDao;
+    @Autowired
+    private WorkTimeDao workTimeDao;
 
     @GetMapping("")
     public String home(Map<String, Object> model) {
@@ -38,11 +37,14 @@ public class HomeController {
         model.put("editContactForm", new EditContactForm());
         model.put("noteForm", new NoteForm());
         model.put("editNoteForm", new EditNoteForm());
+        model.put("worktimeForm", new WorktimeForm());
+        model.put("editWorktimeForm", new EditWorktimeForm());
 
         model.put("clients", clientDao.findAllBy());
         model.put("projects", projectDao.findAllBy());
         model.put("contacts", contactDao.findAllBy());
         model.put("notes", noteDao.findAllByOrderByDateDesc());
+        model.put("worktimes", workTimeDao.findAllByOrderByStartDescProjectAsc());
 
         model.put("statuses", ProjectStatus.values());
         model.put("priorities", ProjectPriority.values());

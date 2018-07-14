@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 @Entity
@@ -15,9 +17,9 @@ public class WorkTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "work_time_id")
     private long id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime start;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime end;
     private String description;
     private boolean exported;
@@ -28,7 +30,10 @@ public class WorkTime {
 
     @Transient
     @JsonIgnore
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    @Transient
+    @JsonIgnore
+    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
     public WorkTime() {
     }
@@ -39,6 +44,14 @@ public class WorkTime {
         this.exported = exported;
         this.description = description;
         this.project = project;
+    }
+
+    public WorkTime(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, String description, Project project) {
+        this.start = LocalDateTime.of(startDate, startTime);
+        this.end = LocalDateTime.of(endDate, endTime);
+        this.description = description;
+        this.project = project;
+        this.exported = false;
     }
 
     public long getId() {
@@ -54,8 +67,13 @@ public class WorkTime {
     }
 
     @JsonIgnore
-    public String getStartAsString() {
-        return start.format(formatter);
+    public String getStartDateAsString() {
+        return start.format(dateFormatter);
+    }
+
+    @JsonIgnore
+    public String getStartTimeAsString() {
+        return start.format(timeFormatter);
     }
 
     public void setStart(LocalDateTime start) {
@@ -67,8 +85,13 @@ public class WorkTime {
     }
 
     @JsonIgnore
-    public String getEndAsString() {
-        return end.format(formatter);
+    public String getEndDateAsString() {
+        return end.format(dateFormatter);
+    }
+
+    @JsonIgnore
+    public String getEndTimeAsString() {
+        return end.format(timeFormatter);
     }
 
     public void setEnd(LocalDateTime end) {
@@ -103,8 +126,8 @@ public class WorkTime {
     public String toString() {
         return "WorkTime{" +
                 "id=" + id +
-                ", start=" + start.format(formatter) +
-                ", end=" + end.format(formatter) +
+                ", start=" + start +
+                ", end=" + end +
                 ", exported=" + exported +
                 ", project=" + project +
                 '}';
