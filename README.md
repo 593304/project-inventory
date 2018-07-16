@@ -13,6 +13,7 @@ This is a hobby project with embedded webserver and in-memory database using **S
   * [Version-0.5.5](#version-055)
   * [Version-0.5.8](#version-058)
   * [Version-0.6.0](#version-060)
+  * [Version-0.6.7](#version-067)
 * [ToDo](#todo)
 
 ## Description
@@ -51,9 +52,15 @@ Fixed scrollbars in modals, but need to fix them when resizing window.
 
 Added the basics of working times. Now can add, edit or delete worktimes.
 
+### Version-0.6.7
+
+Cleaned java and javascript codes. Checked existing functionality. Added Profile entity for worktime export.
+
 ## ToDo
 
 - [ ] Scrollable modals
+- [x] Projects
+   - [ ] Worktime list
 - [x] Notes
    - [x] Comments
 - [x] Working times

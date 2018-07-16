@@ -3,6 +3,7 @@ package hu.adam.project_inventory.data;
 import javax.persistence.*;
 
 @Entity
+@Embeddable
 @Table(name = "contact")
 public class Contact {
 
@@ -25,16 +26,6 @@ public class Contact {
     }
 
     public Contact(String firstName, String lastName, String mail, String phone, String address, Client client) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.mail = mail;
-        this.phone = phone;
-        this.address = address;
-        this.client = client;
-    }
-
-    public Contact(long id, String firstName, String lastName, String mail, String phone, String address, Client client) {
-        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.mail = mail;

@@ -38,14 +38,6 @@ public class WorkTime {
     public WorkTime() {
     }
 
-    public WorkTime(LocalDateTime start, LocalDateTime end, String description, boolean exported, Project project) {
-        this.start = start;
-        this.end = end;
-        this.exported = exported;
-        this.description = description;
-        this.project = project;
-    }
-
     public WorkTime(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, String description, Project project) {
         this.start = LocalDateTime.of(startDate, startTime);
         this.end = LocalDateTime.of(endDate, endTime);

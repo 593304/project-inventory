@@ -211,3 +211,68 @@ td li:last-child {
 .button-group > button:last-child:hover {
     border-right: 0;
 }
+
+.custom-checkbox-container {
+    position: relative;
+
+    cursor: pointer;
+
+    display: block;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.custom-checkbox-container input {
+    position: absolute;
+
+    cursor: pointer;
+
+    opacity: 0;
+}
+
+.custom-checkbox {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    border: 1px solid #D1D1D1;
+    border-radius: 4px;
+
+    padding: 6px 6px;
+
+    height: 26px;
+    width: 26px;
+
+    background-color: #FFF;
+}
+
+.custom-checkbox:after {
+    position: absolute;
+
+    content: "";
+
+    display: none;
+}
+
+.custom-checkbox-container input:checked ~ .custom-checkbox:after {
+    display: block;
+}
+
+.custom-checkbox-container .custom-checkbox:after {
+    left: 15px;
+    top: 9px;
+
+    border: solid #1EAEDB;
+    border-width: 0 3px 3px 0;
+
+    width: 6px;
+    height: 12px;
+
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}

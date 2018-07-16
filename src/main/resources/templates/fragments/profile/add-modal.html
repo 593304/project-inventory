@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="addModal"  id="profileAdd" class="modal hidden">
+            <div class="modal-window">
+                <form th:action="@{/profiles}" method="post" th:object="${profileForm}">
+                    <div class="row">
+                        <div class="twelve columns">
+                            <label>
+                                Profile name
+                                <input class="u-full-width name" type="text" th:field="*{name}" required="true" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="profileContactAdd" class="twelve columns">
+                            <label>
+                                Contact name
+                                <select class="u-full-width" th:field="*{contact}">
+                                    <option value="-1">-</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <label>Overwrite project info</label>
+                    <div class="row">
+                        <div class="one columns">
+                            <label>
+                                &nbsp;
+                                <span class="custom-checkbox-container">
+                                    <input class="overwriteProjectInfo" type="checkbox" th:field="*{overwriteProjectInfo}" />
+                                    <span class="custom-checkbox"></span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="six columns">
+                            <label>
+                                Project name
+                                <input class="u-full-width projectName" type="text" th:field="*{projectName}" />
+                            </label>
+                        </div>
+                        <div class="five columns">
+                            <label>
+                                Project code
+                                <input class="u-full-width projectCode" type="text" th:field="*{projectCode}" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row modal-button">
+                        <div class="twelve columns">
+                            <button class="button-primary" type="submit">Save</button>
+                            <button class="button" type="button" onclick="projectInventory.module.profile.hideAdd()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

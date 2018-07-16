@@ -108,15 +108,15 @@ projectInventory.logger = (function() {
     };
 
     return {
-        debug : function(functionName, message) {
+        debug           : function(functionName, message) {
             log(DEBUG, functionName, message);
         },
 
-        info : function(functionName, message) {
+        info            : function(functionName, message) {
             log(INFO, functionName, message);
         },
 
-        error : function(functionName, message) {
+        error           : function(functionName, message) {
             log(ERROR, functionName, message);
         },
 
@@ -146,6 +146,8 @@ projectInventory.app = (function() {
     var moduleName = 'projectInventory.app',
 
     _appPath = '/project-inventory',
+        
+    _timeout = 200,
 
     tabNames = {
         left : {
@@ -155,7 +157,8 @@ projectInventory.app = (function() {
         },
         right : {
             CLIENT : 'CLIENT',
-            CONTACT: 'CONTACT'
+            CONTACT : 'CONTACT',
+            PROFILE : 'PROFILE'
         }
     },
 
@@ -164,7 +167,8 @@ projectInventory.app = (function() {
         NOTE : '#noteSection',
         WORKTIME : '#worktimeSection',
         CLIENT : '#clientSection',
-        CONTACT : '#contactSection'
+        CONTACT : '#contactSection',
+        PROFILE : '#profileSection'
     },
 
     _defaultTabs = {
@@ -258,46 +262,64 @@ projectInventory.app = (function() {
     };
 
     return {
-        appPath : _appPath,
-        getTabNames : function() { return tabNames },
+        appPath         : _appPath,
+        timeout         : _timeout,
+        getTabNames     : function() { return tabNames },
         updateActiveTab : _updateActiveTab,
-
-        init : _init
+        init            : _init
     };
 }());
 
 projectInventory.module = {};
 
 projectInventory.module.modal = (function() {
-    var
+    var moduleName = 'projectInventory.module.modal',
 
-    _show = function(modalName, enableScrolling) {
-        $(modalName).removeClass('hidden');
+    _checkScrolling = function(modalName, setSmallParameter, forceDisableScrolling) {
+        var functionName = moduleName + '.checkScrolling';
+        logger.debug(functionName, 'Checking modal height');
 
-        if(enableScrolling) {
-            var height = $(window).height() * 0.7 - 30;
+        var height = $(window).height() * 0.7 - 30;
+        var modalHeight = $(modalName + ' .modal-window').height();
 
-            if(height < $(modalName + ' .modal-window').height()) {
-                $(modalName + ' .modal-window').addClass('scroll');
-                $(modalName + ' .modal-content').addClass('scroll');
-                $(modalName + ' .modal-button').addClass('scroll');
-            }
-        }
-    },
+        if($(modalName + ' .modal-window').hasClass('scroll'))
+            modalHeight += $(modalName + ' .modal-content')[0].scrollHeight - $(modalName + ' .modal-content').height();
 
-    _hide = function(modalName, disableScrolling) {
-        $(modalName).addClass('hidden');
+        if(height < modalHeight && !forceDisableScrolling) {
+            $(modalName + ' .modal-window').addClass('scroll');
+            $(modalName + ' .modal-content').addClass('scroll');
+            $(modalName + ' .modal-button').addClass('scroll');
 
-        if(disableScrolling) {
+            if(setSmallParameter)
+                $(modalName + ' .modal-content').addClass('small');
+            else
+                $(modalName + ' .modal-content').removeClass('small');
+        } else {
             $(modalName + ' .modal-window').removeClass('scroll');
             $(modalName + ' .modal-content').removeClass('scroll');
             $(modalName + ' .modal-button').removeClass('scroll');
+
+            $(modalName + ' .modal-content').removeClass('small');
         }
+    },
+
+    _show = function(modalName, enableScrolling, setSmallParameter, forceDisableScrolling) {
+        $(modalName).removeClass('hidden');
+
+        if(enableScrolling)
+            _checkScrolling(modalName, setSmallParameter, forceDisableScrolling);
+    },
+
+    _hide = function(modalName) {
+        $(modalName).addClass('hidden');
+
+        _checkScrolling(modalName, true, true);
     };
 
     return {
-        show : _show,
-        hide : _hide
+        show            : _show,
+        hide            : _hide,
+        checkScrolling  : _checkScrolling
     };
 }());
 
@@ -307,6 +329,7 @@ projectInventory.module.client = (function() {
     selectors = {
         clientSection : '#clientSection',
         contactSection : '#contactSection',
+        profileSection : '#profileSection',
         clientAdd : '#clientAdd',
         listProjects : '#listProjects',
         listContacts : '#listContacts',
@@ -330,6 +353,7 @@ projectInventory.module.client = (function() {
 
         $(selectors.clientSection).removeClass('hidden');
         $(selectors.contactSection).addClass('hidden');
+        $(selectors.profileSection).addClass('hidden');
 
         projectInventory.app.updateActiveTab('right', projectInventory.app.getTabNames().right.CLIENT);
     },
@@ -338,18 +362,17 @@ projectInventory.module.client = (function() {
         var functionName = moduleName + '.showAdd';
         logger.debug(functionName, 'Opening add client modal');
 
-        $(selectors.clientAdd).removeClass('hidden');
+        projectInventory.module.modal.show(selectors.clientAdd, false, false, false);
     },
 
     _hideAdd = function() {
         var functionName = moduleName + '.hideAdd';
         logger.debug(functionName, 'Closing add client modal');
 
-        $(selectors.clientAdd).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.clientAdd);
 
         logger.info(functionName, 'Setting default form values for add client modal');
 
-        $(selectors.clientAdd).addClass('hidden');
         $(selectors.clientAdd + ' input').val('');
     },
 
@@ -362,18 +385,17 @@ projectInventory.module.client = (function() {
         $(selectors.clientEdit + ' .name').val($(selectors.client + id + ' .name').html());
         $(selectors.clientEdit + ' .alias').val($(selectors.client + id + ' .alias').html());
 
-        $(selectors.clientEdit).removeClass('hidden');
+        projectInventory.module.modal.show(selectors.clientEdit, false, false, false);
     },
 
     _hideEdit = function() {
         var functionName = moduleName + '.hideEdit';
         logger.debug(functionName, 'Closing edit client modal');
 
-        $(selectors.clientEdit).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.clientEdit);
 
         logger.info(functionName, 'Setting default form values for edit client modal');
 
-        $(selectors.clientEdit).addClass('hidden');
         $(selectors.clientEdit + ' input').val('');
     },
 
@@ -385,14 +407,16 @@ projectInventory.module.client = (function() {
 
         $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/clients/delete/' + id);
         $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.client.hideDelete()');
-        $(selectors.deleteModal).removeClass('hidden');
+
+        projectInventory.module.modal.show(selectors.deleteModal, false, false, false);
     },
 
     _hideDelete = function() {
         var functionName = moduleName + '.hideDelete';
         logger.debug(functionName, 'Closing delete client modal');
 
-        $(selectors.deleteModal).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.deleteModal);
+
         $(selectors.deleteModal + ' :button').attr('onclick', '');
     },
 
@@ -401,7 +425,11 @@ projectInventory.module.client = (function() {
         logger.debug(functionName, 'Getting project list for client');
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + '/projects/list/' + id)
+            $.ajax({
+                url: projectInventory.app.appPath + '/projects/list/' + id,
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
                 .done(function(data) {
                     logger.info(functionName, 'Found projects: ' + JSON.stringify(data));
                     resolve(data);
@@ -436,21 +464,23 @@ projectInventory.module.client = (function() {
                         );
                     });
                 }
+
+                projectInventory.module.modal.show(selectors.listProjects, true, false, false);
             },
             function() {
                 logger.error(functionName, 'Opening modal with error message');
 
                 $(selectors.listProjects + ' tbody').append(elements.errorProjectListRow);
-            });
 
-        $(selectors.listProjects).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.listProjects, true, false, false);
+            });
     },
 
     _hideProjects = function() {
         var functionName = moduleName + '.hideProjects';
         logger.debug(functionName, 'Closing project list modal');
 
-        $(selectors.listProjects).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.listProjects);
 
         logger.info(functionName, 'Removing table rows from project list modal');
 
@@ -462,7 +492,11 @@ projectInventory.module.client = (function() {
         logger.debug(functionName, 'Getting contact list for client');
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + '/contacts/list/' + id)
+            $.ajax({
+                url: projectInventory.app.appPath + '/contacts/list/' + id,
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
                 .done(function(data) {
                     logger.info(functionName, 'Found contacts: ' + JSON.stringify(data));
                     resolve(data);
@@ -498,21 +532,23 @@ projectInventory.module.client = (function() {
                         );
                     });
                 }
+
+                projectInventory.module.modal.show(selectors.listContacts, true, false, false);
             },
             function() {
                 logger.error(functionName, 'Opening modal with error message');
 
                 $(selectors.listContacts + ' tbody').append(elements.errorContactListRow);
-            });
 
-        $(selectors.listContacts).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.listContacts, true, false, false);
+            });
     },
 
     _hideContacts = function() {
         var functionName = moduleName + '.hideContacts';
         logger.debug(functionName, 'Closing contact list modal');
 
-        $(selectors.listContacts).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.listContacts);
 
         logger.info(functionName, 'Removing table rows from contact list modal');
 
@@ -520,17 +556,17 @@ projectInventory.module.client = (function() {
     };
 
     return {
-        showSection : _showSection,
-        showAdd : _showAdd,
-        hideAdd : _hideAdd,
-        showEdit : _showEdit,
-        hideEdit : _hideEdit,
-        showDelete : _showDelete,
-        hideDelete : _hideDelete,
-        showProjects : _showProjects,
-        hideProjects : _hideProjects,
-        showContacts : _showContacts,
-        hideContacts : _hideContacts
+        showSection     : _showSection,
+        showAdd         : _showAdd,
+        hideAdd         : _hideAdd,
+        showEdit        : _showEdit,
+        hideEdit        : _hideEdit,
+        showDelete      : _showDelete,
+        hideDelete      : _hideDelete,
+        showProjects    : _showProjects,
+        hideProjects    : _hideProjects,
+        showContacts    : _showContacts,
+        hideContacts    : _hideContacts
     };
 }());
 
@@ -540,6 +576,7 @@ projectInventory.module.contact = (function () {
     selectors = {
         clientSection : '#clientSection',
         contactSection : '#contactSection',
+        profileSection : '#profileSection',
         contactAdd : '#contactAdd',
         contactClientAdd : '#contactClientAdd',
         contactInfoModal : '#contactInfoModal',
@@ -559,6 +596,7 @@ projectInventory.module.contact = (function () {
 
         $(selectors.clientSection).addClass('hidden');
         $(selectors.contactSection).removeClass('hidden');
+        $(selectors.profileSection).addClass('hidden');
 
         projectInventory.app.updateActiveTab('right', projectInventory.app.getTabNames().right.CONTACT);
     },
@@ -568,7 +606,11 @@ projectInventory.module.contact = (function () {
         logger.debug(functionName, "Getting client list");
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + "/clients/list")
+            $.ajax({
+                url: projectInventory.app.appPath + "/clients/list",
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
                 .done(function (data) {
                     logger.info(functionName, 'Found clients: ' + JSON.stringify(data));
 
@@ -604,19 +646,21 @@ projectInventory.module.contact = (function () {
                 logger.info(functionName, 'Opening modal with client selection');
 
                 $(selectors.contactClientAdd + ' select').append(element);
+
+                projectInventory.module.modal.show(selectors.contactAdd, false, false, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty client selection');
-            });
 
-        $(selectors.contactAdd).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.contactAdd, false, false, false);
+            });
     },
 
     _hideAdd = function() {
         var functionName = moduleName + '.hideAdd';
         logger.debug(functionName, 'Closing add contact modal');
 
-        $(selectors.contactAdd).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.contactAdd);
 
         logger.info(functionName, 'Setting default form values for add contact modal');
 
@@ -624,20 +668,51 @@ projectInventory.module.contact = (function () {
         $(selectors.contactAdd + ' input').val('');
     },
 
-    _showInfo = function(id, firstName, lastName, client, mail, phone, address) {
+    getContactInfo = function(id) {
+        var functionName = moduleName + '.getContactInfo';
+        logger.debug(functionName, 'Getting contact info');
+
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                url : projectInventory.app.appPath + "/contacts/info/" + id,
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
+                .done(function(data) {
+                    logger.info(functionName, 'Found contact: ' + JSON.stringify(data));
+
+                    resolve(data);
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject();
+                });
+        });
+    },
+
+    _showInfo = function(id) {
         var functionName = moduleName + '.showInfo';
         logger.debug(functionName, 'Opening contact info modal');
 
-        $(selectors.contactInfoModal + ' .first-name').html(firstName);
-        $(selectors.contactInfoModal + ' .last-name').html(lastName);
-        $(selectors.contactInfoModal + ' .client').html(client);
-        $(selectors.contactInfoModal + ' .mail').html(mail);
-        $(selectors.contactInfoModal + ' .phone').html(phone);
-        $(selectors.contactInfoModal + ' .address').html(address);
+        getContactInfo(id).then(
+            function(contact) {
+                logger.info(functionName, 'Opening modal with contact info');
+                console.log(contact);
 
-        $(selectors.contactInfoModal + ' form').attr('action', projectInventory.app.appPath + '/contacts/vcard/' + id);
+                $(selectors.contactInfoModal + ' .first-name').html(contact.firstName);
+                $(selectors.contactInfoModal + ' .last-name').html(contact.lastName);
+                $(selectors.contactInfoModal + ' .client').html(contact.client.name);
+                $(selectors.contactInfoModal + ' .mail').html(contact.mail);
+                $(selectors.contactInfoModal + ' .phone').html(contact.phone);
+                $(selectors.contactInfoModal + ' .address').html(contact.address);
 
-        $(selectors.contactInfoModal).removeClass('hidden');
+                $(selectors.contactInfoModal + ' form').attr('action', projectInventory.app.appPath + '/contacts/vcard/' + id);
+
+                projectInventory.module.modal.show(selectors.contactInfoModal, false, false, false);
+            },
+            function() {
+                logger.error(functionName, 'Nothing to show');
+            });
     },
 
     _hideInfo = function() {
@@ -653,39 +728,62 @@ projectInventory.module.contact = (function () {
 
         $(selectors.contactInfoModal + ' form').attr('action', '');
 
-        $(selectors.contactInfoModal).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.contactInfoModal);
     },
 
-    _showEdit = function(id, firstName, lastName, client, mail, phone, address) {
+    _showEdit = function(id) {
         var functionName = moduleName + '.showEdit';
         logger.debug(functionName, 'Opening edit contact modal');
 
-        $(selectors.contactEdit + ' .id').val(id);
-        $(selectors.contactEdit + ' .first-name').val(firstName);
-        $(selectors.contactEdit + ' .last-name').val(lastName);
-        $(selectors.contactEdit + ' .mail').val(mail);
-        $(selectors.contactEdit + ' .phone').val(phone);
-        $(selectors.contactEdit + ' .address').val(address);
+        var client = -1;
 
-        createClientSelection().then(
-            function(element) {
-                logger.info(functionName, 'Opening modal with client selection');
+        getContactInfo(id).then(
+            function(contact) {
+                logger.info(functionName, 'Opening modal with contact info');
 
-                $(selectors.contactClientEdit + ' select').append(element);
-                $(selectors.contactClientEdit + ' select').val(client);
+                $(selectors.contactEdit + ' .id').val(id);
+                $(selectors.contactEdit + ' .first-name').val(contact.firstName);
+                $(selectors.contactEdit + ' .last-name').val(contact.lastName);
+                $(selectors.contactEdit + ' .mail').val(contact.mail);
+                $(selectors.contactEdit + ' .phone').val(contact.phone);
+                $(selectors.contactEdit + ' .address').val(contact.address);
+
+                client = contact.client.id;
             },
             function() {
-                logger.info(functionName, 'Opening modal with empty client selection');
+                logger.error(functionName, 'Opening modal without contact info');
+
+                $(selectors.contactEdit + ' .id').val(id);
+                $(selectors.contactEdit + ' .first-name').val('');
+                $(selectors.contactEdit + ' .last-name').val('');
+                $(selectors.contactEdit + ' .mail').val('');
+                $(selectors.contactEdit + ' .phone').val('');
+                $(selectors.contactEdit + ' .address').val('');
             });
 
-        $(selectors.contactEdit).removeClass('hidden');
+        setTimeout(function () {
+            createClientSelection().then(
+                function(element) {
+                    logger.info(functionName, 'Opening modal with client selection');
+
+                    $(selectors.contactClientEdit + ' select').append(element);
+                    $(selectors.contactClientEdit + ' select').val(client);
+
+                    projectInventory.module.modal.show(selectors.contactEdit, false, false, false);
+                },
+                function() {
+                    logger.info(functionName, 'Opening modal with empty client selection');
+
+                    projectInventory.module.modal.show(selectors.contactEdit, false, false, false);
+                });
+        }, projectInventory.app.timeout);
     },
 
     _hideEdit = function() {
         var functionName = moduleName + '.hideEdit';
         logger.debug(functionName, 'Closing edit contact modal');
 
-        $(selectors.contactEdit).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.contactEdit);
 
         logger.info(functionName, 'Setting default form values for edit contact modal');
 
@@ -701,28 +799,206 @@ projectInventory.module.contact = (function () {
 
         $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/contacts/delete/' + id);
         $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.contact.hideDelete()');
-        $(selectors.deleteModal).removeClass('hidden');
+
+        projectInventory.module.modal.show(selectors.deleteModal, false, false, false);
     },
 
     _hideDelete = function() {
         var functionName = moduleName + '.hideDeleteModal';
-        logger.debug(functionName, 'Closing delete modal');
+        logger.debug(functionName, 'Closing delete contact modal');
 
-        $(selectors.deleteModal).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.deleteModal);
+
         $(selectors.deleteModal + ' :button').attr('onclick', '');
     };
 
     return {
         showSection : _showSection,
-        showAdd : _showAdd,
-        hideAdd : _hideAdd,
-        showInfo : _showInfo,
-        hideInfo : _hideInfo,
-        showEdit : _showEdit,
-        hideEdit : _hideEdit,
-        showDelete : _showDelete,
-        hideDelete : _hideDelete
+        showAdd     : _showAdd,
+        hideAdd     : _hideAdd,
+        showInfo    : _showInfo,
+        hideInfo    : _hideInfo,
+        showEdit    : _showEdit,
+        hideEdit    : _hideEdit,
+        showDelete  : _showDelete,
+        hideDelete  : _hideDelete
     };
+}());
+
+projectInventory.module.profile = (function() {
+    var moduleName = 'projectInventory.module.profile',
+
+    selectors = {
+        clientSection : '#clientSection',
+        contactSection : '#contactSection',
+        profileSection : '#profileSection',
+        profileContactAdd : '#profileContactAdd',
+        profileAdd : '#profileAdd',
+        profile : '#profile-',
+        profileContactEdit : '#profileContactEdit',
+        profileEdit : '#profileEdit',
+        deleteModal : '#deleteModal'
+    },
+
+    elements = {
+        defaultOptionElement : '<option value="-1">-</option>',
+        optionElement : '<option value="{id}">{name}</option>'
+    },
+
+    _showSection = function() {
+        var functionName = moduleName + '.showSection';
+        logger.debug(functionName, 'Opening profile section');
+
+        $(selectors.clientSection).addClass('hidden');
+        $(selectors.contactSection).addClass('hidden');
+        $(selectors.profileSection).removeClass('hidden');
+
+        projectInventory.app.updateActiveTab('right', projectInventory.app.getTabNames().right.PROFILE);
+    },
+
+    createContactSelection = function() {
+        var functionName = moduleName + '.createContactSelection';
+        logger.debug(functionName, "Getting contact list");
+
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                url: projectInventory.app.appPath + "/contacts/list",
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
+                .done(function (data) {
+                    logger.info(functionName, 'Found contacts: ' + JSON.stringify(data));
+
+                    if (data.length == 0) {
+                        logger.info(functionName, 'No contacts found!');
+                        reject();
+                    }
+                    var result = '';
+
+                    $(data).each(function () {
+                        result += elements.optionElement
+                            .replace('{id}', this.id)
+                            .replace('{name}', this.firstName + ' ' + this.lastName + ' ( ' + this.client.name + ' )');
+                    });
+
+                    logger.info(functionName, 'Option elements: ' + result);
+
+                    resolve(result);
+                })
+                .fail(function() {
+                    logger.error(functionName, 'Cannot reach the server');
+                    reject();
+                });
+        });
+    },
+
+    _showAdd = function() {
+        var functionName = moduleName + '.showAdd';
+        logger.debug(functionName, 'Opening add profile modal');
+
+        createContactSelection().then(
+            function(element) {
+                logger.info(functionName, 'Opening modal with contact selection');
+
+                $(selectors.profileContactAdd + ' select').append(element);
+
+                projectInventory.module.modal.show(selectors.profileAdd, false, false, false);
+            },
+            function() {
+                logger.info(functionName, 'Opening modal with empty contact selection');
+
+                projectInventory.module.modal.show(selectors.profileAdd, false, false, false);
+            });
+    },
+
+    _hideAdd = function() {
+        var functionName = moduleName + '.hideAdd';
+        logger.debug(functionName, 'Closing add profile modal');
+
+        projectInventory.module.modal.hide(selectors.profileAdd);
+
+        logger.info(functionName, 'Setting default form values for add profile modal');
+
+        $(selectors.profileContactAdd + ' select').html(elements.defaultOptionElement);
+        $(selectors.profileAdd + ' input').val('');
+        $(selectors.profileAdd + ' .overwriteProjectInfo').prop('checked', false);
+    },
+
+    _showEdit = function(id) {
+        var functionName = moduleName + '.showEdit';
+        logger.debug(functionName, 'Opening edit profile modal');
+
+        var selectedRow = selectors.profile + id;
+
+        $(selectors.profileEdit + ' .id').val(id);
+        $(selectors.profileEdit + ' .name').val($(selectedRow + ' .name').html());
+
+        var projectInfo = $(selectedRow + ' .project-info').html();
+        if(projectInfo.indexOf('Use default') == -1) {
+            $(selectors.profileEdit + ' .overwriteProjectInfo').prop('checked', true);
+            $(selectors.profileEdit + ' .projectName').val(projectInfo.split(' -- ')[0]);
+            $(selectors.profileEdit + ' .projectCode').val(projectInfo.split(' -- ')[1]);
+        }
+
+        createContactSelection().then(
+            function(element) {
+                logger.info(functionName, 'Opening modal with contact selection');
+
+                $(selectors.profileContactEdit + ' select').append(element);
+                $(selectors.profileContactEdit + ' select').val($(selectedRow + ' .contact').attr('data'));
+
+                projectInventory.module.modal.show(selectors.profileEdit, false, false, false);
+            },
+            function() {
+                logger.info(functionName, 'Opening modal with empty contact selection');
+
+                projectInventory.module.modal.show(selectors.profileEdit, false, false, false);
+            });
+    },
+
+    _hideEdit = function() {
+        var functionName = moduleName + '.hideEdit';
+        logger.debug(functionName, 'Closing edit profile modal');
+
+        projectInventory.module.modal.hide(selectors.profileEdit);
+
+        logger.info(functionName, 'Setting default form values for add profile modal');
+
+        $(selectors.profileContactEdit + ' select').html(elements.defaultOptionElement);
+        $(selectors.profileEdit + ' input').val('');
+        $(selectors.profileEdit + ' .overwriteProjectInfo').prop('checked', false);
+    },
+
+    _showDelete = function(id, name) {
+        var functionName = moduleName + '.showDelete';
+        logger.debug(functionName, 'Opening delete profile modal');
+
+        logger.info(functionName, 'Profile selected for delete: [ ' + id + ', ' + name + ' ]');
+
+        $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/profiles/delete/' + id);
+        $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.profile.hideDelete()');
+
+        projectInventory.module.modal.show(selectors.deleteModal, false, false, false);
+    },
+
+    _hideDelete = function() {
+            var functionName = moduleName + '.hideDeleteModal';
+            logger.debug(functionName, 'Closing delete profile modal');
+
+            projectInventory.module.modal.hide(selectors.deleteModal);
+
+            $(selectors.deleteModal + ' :button').attr('onclick', '');
+        };
+
+    return {
+        showSection : _showSection,
+        showAdd     : _showAdd,
+        hideAdd     : _hideAdd,
+        showEdit    : _showEdit,
+        hideEdit    : _hideEdit,
+        showDelete  : _showDelete,
+        hideDelete  : _hideDelete
+    }
 }());
 
 projectInventory.module.project = (function() {
@@ -775,7 +1051,7 @@ projectInventory.module.project = (function() {
             $.ajax({
                 url : projectInventory.app.appPath + "/clients/list",
                 method : 'GET',
-                timeout : 200
+                timeout : projectInventory.app.timeout
             })
                 .done(function (data) {
                     logger.info(functionName, 'Found clients: ' + JSON.stringify(data));
@@ -814,12 +1090,12 @@ projectInventory.module.project = (function() {
 
                 $(selectors.projectClientAdd + ' select').append(element);
 
-                projectInventory.module.modal.show(selectors.projectAdd, false);
+                projectInventory.module.modal.show(selectors.projectAdd, false, false, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty client selection');
 
-                projectInventory.module.modal.show(selectors.projectAdd, false);
+                projectInventory.module.modal.show(selectors.projectAdd, false, false, false);
             });
     },
 
@@ -827,7 +1103,7 @@ projectInventory.module.project = (function() {
         var functionName = moduleName + '.hideAdd';
         logger.debug(functionName, 'Closing add project modal');
 
-        projectInventory.module.modal.hide(selectors.projectAdd, false);
+        projectInventory.module.modal.hide(selectors.projectAdd);
 
         logger.info(functionName, 'Setting default form values for add project modal');
 
@@ -845,7 +1121,7 @@ projectInventory.module.project = (function() {
             $.ajax({
                 url : projectInventory.app.appPath + "/notes/list/" + id,
                 method : 'GET',
-                timeout : 200
+                timeout : projectInventory.app.timeout
             })
                 .done(function (data) {
                     logger.info(functionName, 'Found notes: ' + JSON.stringify(data));
@@ -891,12 +1167,12 @@ projectInventory.module.project = (function() {
             function(element) {
                 $(selectors.listNotes + ' tbody').html(element);
 
-                projectInventory.module.modal.show(selectors.listNotes, true);
+                projectInventory.module.modal.show(selectors.listNotes, true, false, false);
             },
             function(element) {
                 $(selectors.listNotes + ' tbody').html(element);
 
-                projectInventory.module.modal.show(selectors.listNotes, false);
+                projectInventory.module.modal.show(selectors.listNotes, true, false, false);
             });
     },
 
@@ -928,12 +1204,12 @@ projectInventory.module.project = (function() {
                 $(selectors.projectClientEdit + ' select').append(element);
                 $(selectors.projectClientEdit + ' select').val($(selectedRow + ' .client').attr('data'));
 
-                projectInventory.module.modal.show(selectors.projectEdit, false);
+                projectInventory.module.modal.show(selectors.projectEdit, false, false, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty client selection');
 
-                projectInventory.module.modal.show(selectors.projectEdit, false);
+                projectInventory.module.modal.show(selectors.projectEdit, false, false, false);
             });
     },
 
@@ -941,7 +1217,7 @@ projectInventory.module.project = (function() {
         var functionName = moduleName + '.hideEdit';
         logger.debug(functionName, 'Closing edit project modal');
 
-        projectInventory.module.modal.hide(selectors.projectEdit, false);
+        projectInventory.module.modal.hide(selectors.projectEdit);
 
         logger.info(functionName, 'Setting default form values for edit project modal');
 
@@ -959,27 +1235,29 @@ projectInventory.module.project = (function() {
 
         $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/projects/delete/' + id);
         $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.project.hideDelete()');
-        projectInventory.module.modal.show(selectors.deleteModal, false);
+
+        projectInventory.module.modal.show(selectors.deleteModal, false, false, false);
     },
 
     _hideDelete = function() {
         var functionName = moduleName + '.hideDeleteModal';
-        logger.debug(functionName, 'Closing delete modal');
+        logger.debug(functionName, 'Closing delete project modal');
 
-        projectInventory.module.modal.hide(selectors.deleteModal, false);
+        projectInventory.module.modal.hide(selectors.deleteModal);
+
         $(selectors.deleteModal + ' :button').attr('onclick', '');
     };
 
     return {
         showSection : _showSection,
-        showAdd : _showAdd,
-        hideAdd : _hideAdd,
-        showNotes : _showNotes,
-        hideNotes : _hideNotes,
-        showEdit : _showEdit,
-        hideEdit : _hideEdit,
-        showDelete : _showDelete,
-        hideDelete : _hideDelete
+        showAdd     : _showAdd,
+        hideAdd     : _hideAdd,
+        showNotes   : _showNotes,
+        hideNotes   : _hideNotes,
+        showEdit    : _showEdit,
+        hideEdit    : _hideEdit,
+        showDelete  : _showDelete,
+        hideDelete  : _hideDelete
     }
 }());
 
@@ -1017,7 +1295,7 @@ projectInventory.module.note = (function() {
 
     _showSection = function() {
         var functionName = moduleName + '.showSection';
-        logger.debug(functionName, 'Opening project section');
+        logger.debug(functionName, 'Opening note section');
 
         $(selectors.projectSection).addClass('hidden');
         $(selectors.noteSection).removeClass('hidden');
@@ -1031,7 +1309,11 @@ projectInventory.module.note = (function() {
         logger.debug(functionName, "Getting date from server");
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + "/home/now/date")
+            $.ajax({
+                url: projectInventory.app.appPath + "/home/now/date",
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
                 .done(function(data) {
                     logger.info(functionName, "Date: " + data);
 
@@ -1049,7 +1331,11 @@ projectInventory.module.note = (function() {
         logger.debug(functionName, "Getting project list");
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + "/projects/list")
+            $.ajax({
+                url: projectInventory.app.appPath + "/projects/list",
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
                 .done(function (data) {
                     logger.info(functionName, 'Found projects: ' + JSON.stringify(data));
 
@@ -1096,19 +1382,21 @@ projectInventory.module.note = (function() {
                 logger.info(functionName, 'Opening modal with project selection');
 
                 $(selectors.noteProjectAdd + ' select').append(element);
+
+                projectInventory.module.modal.show(selectors.noteAdd, false, false, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty project selection');
-            });
 
-        $(selectors.noteAdd).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.noteAdd, false, false, false);
+            });
     },
 
     _hideAdd = function() {
         var functionName = moduleName + '.hideAdd';
         logger.debug(functionName, 'Closing add note modal');
 
-        $(selectors.noteAdd).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.noteAdd);
 
         logger.info(functionName, 'Setting default form values for add note modal');
 
@@ -1124,7 +1412,7 @@ projectInventory.module.note = (function() {
             $.ajax({
                 url : projectInventory.app.appPath + "/notes/comment/get/" + id,
                 method : 'GET',
-                timeout : 200
+                timeout : projectInventory.app.timeout
             })
                 .done(function(data) {
                     logger.info(functionName, "Comments: " + data);
@@ -1163,12 +1451,12 @@ projectInventory.module.note = (function() {
 
                 $(selectors.commentsList).append(elements);
 
-                projectInventory.module.modal.show(selectors.commentsModal, true);
+                projectInventory.module.modal.show(selectors.commentsModal, true, false, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal without comments');
 
-                projectInventory.module.modal.show(selectors.commentsModal, true);
+                projectInventory.module.modal.show(selectors.commentsModal, true, false, false);
             });
     },
 
@@ -1178,17 +1466,7 @@ projectInventory.module.note = (function() {
 
         $(selectors.noteCommentAdd).removeClass('hidden');
 
-        if(!$(selectors.commentsModal + ' .modal-window').hasClass('scroll')) {
-            var height = $(window).height() * 0.7 - 30;
-
-            if (height < $(selectors.commentsModal + ' .modal-window').height()) {
-                $(selectors.commentsModal + ' .modal-window').addClass('scroll');
-                $(selectors.commentsModal + ' .modal-content').addClass('scroll');
-                $(selectors.commentsModal + ' .modal-button').addClass('scroll');
-
-                $(selectors.commentsModal + ' .modal-content').addClass('small');
-            }
-        }
+        projectInventory.module.modal.checkScrolling(selectors.commentsModal, true, false);
     },
 
     _addComment = function() {
@@ -1197,8 +1475,10 @@ projectInventory.module.note = (function() {
 
         var comment = $(selectors.noteComment).val();
 
-        $.post({
+        $.ajax({
             url : projectInventory.app.appPath + '/notes/comment/add',
+            method : 'POST',
+            timeout : projectInventory.app.timeout,
             contentType : "application/json",
             data : JSON.stringify({
                 noteId : lastNoteId,
@@ -1215,17 +1495,7 @@ projectInventory.module.note = (function() {
 
                 $(selectors.noteComment).val('');
 
-                if(!$(selectors.commentsModal + ' .modal-window').hasClass('scroll')) {
-                    var height = $(window).height() * 0.7 - 30;
-
-                    if (height < $(selectors.commentsModal + ' .modal-window').height()) {
-                        $(selectors.commentsModal + ' .modal-window').addClass('scroll');
-                        $(selectors.commentsModal + ' .modal-content').addClass('scroll');
-                        $(selectors.commentsModal + ' .modal-button').addClass('scroll');
-
-                        $(selectors.commentsModal + ' .modal-content').addClass('small');
-                    }
-                }
+                projectInventory.module.modal.checkScrolling(selectors.commentsModal, true, false);
             })
             .fail(function() {
                 logger.error(functionName, 'Cannot reach the server');
@@ -1236,8 +1506,10 @@ projectInventory.module.note = (function() {
         var functionName = moduleName + '.deleteComment';
         logger.debug(functionName, 'Deleting comment');
 
-        $.post({
+        $.ajax({
             url : projectInventory.app.appPath + '/notes/comment/delete',
+            method : 'POST',
+            timeout : projectInventory.app.timeout,
             contentType : "application/json",
             data : JSON.stringify({
                 noteId : lastNoteId,
@@ -1249,17 +1521,7 @@ projectInventory.module.note = (function() {
 
                 $(selectors.comment + id).remove();
 
-                if($(selectors.commentsModal + ' .modal-window').hasClass('scroll')) {
-                    var height = $(window).height() * 0.7 - 30;
-
-                    if (height >= $(selectors.commentsModal + ' .modal-window').height()) {
-                        $(selectors.commentsModal + ' .modal-window').removeClass('scroll');
-                        $(selectors.commentsModal + ' .modal-content').removeClass('scroll');
-                        $(selectors.commentsModal + ' .modal-button').removeClass('scroll');
-
-                        $(selectors.commentsModal + ' .modal-content').removeClass('small');
-                    }
-                }
+                projectInventory.module.modal.checkScrolling(selectors.commentsModal, true, false);
             })
             .fail(function() {
                 logger.error(functionName, 'Cannot reach the server');
@@ -1272,17 +1534,7 @@ projectInventory.module.note = (function() {
 
         $(selectors.noteCommentAdd).addClass('hidden');
 
-        if($(selectors.commentsModal + ' .modal-window').hasClass('scroll')) {
-            var height = $(window).height() * 0.7 - 30;
-
-            if (height >= $(selectors.commentsModal + ' .modal-window').height()) {
-                $(selectors.commentsModal + ' .modal-window').removeClass('scroll');
-                $(selectors.commentsModal + ' .modal-content').removeClass('scroll');
-                $(selectors.commentsModal + ' .modal-button').removeClass('scroll');
-
-                $(selectors.commentsModal + ' .modal-content').removeClass('small');
-            }
-        }
+        projectInventory.module.modal.checkScrolling(selectors.commentsModal, true, false);
 
         logger.info(functionName, 'Setting default values for add comment section');
 
@@ -1295,8 +1547,7 @@ projectInventory.module.note = (function() {
 
         lastNoteId = -1;
 
-        projectInventory.module.modal.hide(selectors.commentsModal, true);
-        $(selectors.commentsModal + ' .modal-content').removeClass('small');
+        projectInventory.module.modal.hide(selectors.commentsModal);
 
         $(selectors.noteCommentAdd).addClass('hidden');
 
@@ -1321,19 +1572,21 @@ projectInventory.module.note = (function() {
 
                 $(selectors.noteProjectEdit + ' select').append(element);
                 $(selectors.noteProjectEdit + ' select').val($(selectedRow + ' .project').attr('data'));
+
+                projectInventory.module.modal.show(selectors.noteEdit, false, false, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty project selection');
-            });
 
-        $(selectors.noteEdit).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.noteEdit, false, false, false);
+            });
     },
 
     _hideEdit = function() {
         var functionName = moduleName + '.hideEdit';
         logger.debug(functionName, 'Closing edit note modal');
 
-        $(selectors.noteEdit).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.noteEdit);
 
         logger.info(functionName, 'Setting default form values for edit note modal');
 
@@ -1349,31 +1602,33 @@ projectInventory.module.note = (function() {
 
         $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/notes/delete/' + id);
         $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.note.hideDelete()');
-        $(selectors.deleteModal).removeClass('hidden');
+
+        projectInventory.module.modal.show(selectors.deleteModal, false, false, false);
     },
 
     _hideDelete = function() {
         var functionName = moduleName + '.hideDeleteModal';
-        logger.debug(functionName, 'Closing delete modal');
+        logger.debug(functionName, 'Closing delete note modal');
 
-        $(selectors.deleteModal).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.deleteModal);
+
         $(selectors.deleteModal + ' :button').attr('onclick', '');
     };
 
     return {
-        showSection : _showSection,
-        showAdd : _showAdd,
-        hideAdd : _hideAdd,
-        showComments : _showComments,
-        showAddComment : _showAddComment,
-        addComment : _addComment,
-        deleteComment : _deleteComment,
-        hideAddComment : _hideAddComment,
-        hideComments : _hideComments,
-        showEdit : _showEdit,
-        hideEdit : _hideEdit,
-        showDelete : _showDelete,
-        hideDelete : _hideDelete
+        showSection     : _showSection,
+        showAdd         : _showAdd,
+        hideAdd         : _hideAdd,
+        showComments    : _showComments,
+        showAddComment  : _showAddComment,
+        addComment      : _addComment,
+        deleteComment   : _deleteComment,
+        hideAddComment  : _hideAddComment,
+        hideComments    : _hideComments,
+        showEdit        : _showEdit,
+        hideEdit        : _hideEdit,
+        showDelete      : _showDelete,
+        hideDelete      : _hideDelete
     }
 }());
 
@@ -1399,7 +1654,7 @@ projectInventory.module.worktime = (function() {
 
     _showSection = function() {
         var functionName = moduleName + '.showSection';
-        logger.debug(functionName, 'Opening project section');
+        logger.debug(functionName, 'Opening worktime section');
 
         $(selectors.projectSection).addClass('hidden');
         $(selectors.noteSection).addClass('hidden');
@@ -1417,7 +1672,11 @@ projectInventory.module.worktime = (function() {
         logger.debug(functionName, "Getting datetime from server");
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + "/home/now/datetime/" + startDatetime + '/' + plusHours)
+            $.ajax({
+                url: projectInventory.app.appPath + "/home/now/datetime/" + startDatetime + '/' + plusHours,
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
                 .done(function(data) {
                     logger.info(functionName, "Datetime: " + data);
 
@@ -1456,7 +1715,11 @@ projectInventory.module.worktime = (function() {
         logger.debug(functionName, "Getting datetime from server");
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + "/home/now/datetime/" + plusHours)
+            $.ajax({
+                url: projectInventory.app.appPath + "/home/now/datetime/" + plusHours,
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
                 .done(function(data) {
                     logger.info(functionName, "Datetime: " + data);
 
@@ -1477,7 +1740,11 @@ projectInventory.module.worktime = (function() {
         logger.debug(functionName, "Getting project list");
 
         return new Promise(function(resolve, reject) {
-            $.get(projectInventory.app.appPath + "/projects/list")
+            $.ajax({
+                url: projectInventory.app.appPath + "/projects/list",
+                method : 'GET',
+                timeout : projectInventory.app.timeout
+            })
                 .done(function (data) {
                     logger.info(functionName, 'Found projects: ' + JSON.stringify(data));
 
@@ -1536,19 +1803,21 @@ projectInventory.module.worktime = (function() {
                 logger.info(functionName, 'Opening modal with project selection');
 
                 $(selectors.worktimeProjectAdd + ' select').append(element);
+
+                projectInventory.module.modal.show(selectors.worktimeAdd, false, false, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty project selection');
-            });
 
-        $(selectors.worktimeAdd).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.worktimeAdd, false, false, false);
+            });
     },
 
     _hideAdd = function() {
         var functionName = moduleName + '.hideAdd';
         logger.debug(functionName, 'Closing add worktime modal');
 
-        $(selectors.worktimeAdd).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.worktimeAdd);
 
         logger.info(functionName, 'Setting default form values for add worktime modal');
 
@@ -1575,19 +1844,21 @@ projectInventory.module.worktime = (function() {
 
                 $(selectors.worktimeProjectEdit + ' select').append(element);
                 $(selectors.worktimeProjectEdit + ' select').val($(selectedRow + ' .project').attr('data'));
+
+                projectInventory.module.modal.show(selectors.worktimeEdit, false, false, false);
             },
             function() {
                 logger.info(functionName, 'Opening modal with empty project selection');
-            });
 
-        $(selectors.worktimeEdit).removeClass('hidden');
+                projectInventory.module.modal.show(selectors.worktimeEdit, false, false, false);
+            });
     },
 
     _hideEdit = function() {
         var functionName = moduleName + '.hideEdit';
         logger.debug(functionName, 'Closing edit worktime modal');
 
-        $(selectors.worktimeEdit).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.worktimeEdit);
 
         logger.info(functionName, 'Setting default form values for edit worktime modal');
 
@@ -1603,27 +1874,29 @@ projectInventory.module.worktime = (function() {
 
         $(selectors.deleteModal + ' form').attr('action', projectInventory.app.appPath + '/worktimes/delete/' + id);
         $(selectors.deleteModal + ' :button').attr('onclick', 'projectInventory.module.worktime.hideDelete()');
-        $(selectors.deleteModal).removeClass('hidden');
+
+        projectInventory.module.modal.show(selectors.deleteModal, false, false, false);
     },
 
     _hideDelete = function() {
         var functionName = moduleName + '.hideDeleteModal';
-        logger.debug(functionName, 'Closing delete modal');
+        logger.debug(functionName, 'Closing delete worktime modal');
 
-        $(selectors.deleteModal).addClass('hidden');
+        projectInventory.module.modal.hide(selectors.deleteModal);
+
         $(selectors.deleteModal + ' :button').attr('onclick', '');
     };
 
     return {
-        showSection : _showSection,
-        showExport: _showExport,
-        updateEndDateTime: _updateEndDateTime,
-        showAdd : _showAdd,
-        hideAdd : _hideAdd,
-        showEdit : _showEdit,
-        hideEdit : _hideEdit,
-        showDelete : _showDelete,
-        hideDelete : _hideDelete
+        showSection         : _showSection,
+        showExport          : _showExport,
+        updateEndDateTime   : _updateEndDateTime,
+        showAdd             : _showAdd,
+        hideAdd             : _hideAdd,
+        showEdit            : _showEdit,
+        hideEdit            : _hideEdit,
+        showDelete          : _showDelete,
+        hideDelete          : _hideDelete
     }
 }());
 

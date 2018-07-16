@@ -15,7 +15,10 @@
                     <div class="three columns">
                         <b>Contacts</b>
                     </div>
-                    <div class="six columns text-right">
+                    <div class="three columns disabled cursor-pointer" onclick="projectInventory.module.profile.showSection()">
+                        <b>Profiles</b>
+                    </div>
+                    <div class="three columns text-right">
                         <button class="button-primary" type="button" onclick="projectInventory.module.contact.showAdd()"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
@@ -42,25 +45,10 @@
                             <td class="last-name" th:text="${contact.lastName}"></td>
                             <td class="client" th:text="${contact.client != null ? contact.client.name : '-'}" th:data="${contact.client != null ? contact.client.id : '-1'}"></td>
                             <td>
-                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'projectInventory.module.contact.showInfo(' +
-                                    ${contact.id} + ',\'' +
-                                    ${contact.firstName == null ? '-' : contact.firstName} + '\',\'' +
-                                    ${contact.lastName == null ? '-' : contact.lastName} + '\',\'' +
-                                    ${contact.client == null ? '-' : contact.client.name} + '\',\'' +
-                                    ${contact.mail == null ? '' : contact.mail} + '\',\'' +
-                                    ${contact.phone == null ? '' : contact.phone} + '\',\'' +
-                                    ${contact.address == null ? '' : contact.address} + '\')'">
-                                </i>
+                                <i class="fas fa-external-link-alt cursor-pointer" th:onclick="'projectInventory.module.contact.showInfo(' + ${contact.id} + ')'"></i>
                             </td>
                             <td>
-                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.contact.showEdit(' +
-                                    ${contact.id} + ',\'' +
-                                    ${contact.firstName == null ? '-' : contact.firstName} + '\',\'' +
-                                    ${contact.lastName == null ? '-' : contact.lastName} + '\',\'' +
-                                    ${contact.client == null ? '-1' : contact.client.id} + '\',\'' +
-                                    ${contact.mail == null ? '' : contact.mail} + '\',\'' +
-                                    ${contact.phone == null ? '' : contact.phone} + '\',\'' +
-                                    ${contact.address == null ? '' : contact.address} + '\')'">
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.contact.showEdit(' + ${contact.id} + ')'">
                                 </i>
                             </td>
                             <td>

@@ -34,19 +34,6 @@ public class Client {
         this.alias = alias;
     }
 
-    public Client(long id, String name, String alias) {
-        this.id = id;
-        this.name = name;
-        this.alias = alias;
-    }
-
-    public Client(String name, String alias, List<Project> projects, List<Contact> contacts) {
-        this.name = name;
-        this.alias = alias;
-        this.projects = projects;
-        this.contacts = contacts;
-    }
-
     public long getId() {
         return id;
     }

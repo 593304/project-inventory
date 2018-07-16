@@ -38,38 +38,12 @@ public class Project {
         workTimes = new ArrayList<>();
     }
 
-    public Project(String name, Client client, ProjectStatus status, ProjectPriority priority) {
-        this.name = name;
-        this.client = client;
-        this.status = status;
-        this.priority = priority;
-    }
-
     public Project(String name, String code, Client client, ProjectStatus status, ProjectPriority priority) {
         this.name = name;
         this.code = code;
         this.client = client;
         this.status = status;
         this.priority = priority;
-    }
-
-    public Project(long id, String name, String code, Client client, ProjectStatus status, ProjectPriority priority) {
-        this.id = id;
-        this.name = name;
-        this.code = code;
-        this.client = client;
-        this.status = status;
-        this.priority = priority;
-    }
-
-    public Project(String name, String code, Client client, ProjectStatus status, ProjectPriority priority, List<Note> notes, List<WorkTime> workTimes) {
-        this.name = name;
-        this.code = code;
-        this.client = client;
-        this.status = status;
-        this.priority = priority;
-        this.notes = notes;
-        this.workTimes = workTimes;
     }
 
     public long getId() {

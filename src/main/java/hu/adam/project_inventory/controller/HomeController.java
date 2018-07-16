@@ -25,6 +25,8 @@ public class HomeController {
     private NoteDao noteDao;
     @Autowired
     private WorkTimeDao workTimeDao;
+    @Autowired
+    private ProfileDao profileDao;
 
     @GetMapping("")
     public String home(Map<String, Object> model) {
@@ -39,12 +41,15 @@ public class HomeController {
         model.put("editNoteForm", new EditNoteForm());
         model.put("worktimeForm", new WorktimeForm());
         model.put("editWorktimeForm", new EditWorktimeForm());
+        model.put("profileForm", new ProfileForm());
+        model.put("editProfileForm", new EditProfileForm());
 
         model.put("clients", clientDao.findAllBy());
         model.put("projects", projectDao.findAllBy());
         model.put("contacts", contactDao.findAllBy());
         model.put("notes", noteDao.findAllByOrderByDateDesc());
         model.put("worktimes", workTimeDao.findAllByOrderByStartDescProjectAsc());
+        model.put("profiles", profileDao.findAll());
 
         model.put("statuses", ProjectStatus.values());
         model.put("priorities", ProjectPriority.values());

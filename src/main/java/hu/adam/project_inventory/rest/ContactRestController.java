@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/contacts")
@@ -39,11 +40,24 @@ public class ContactRestController {
     @Autowired
     private ClientDao clientDao;
 
-    @GetMapping("/list/{client_id}")
-    public List<Contact> list(@PathVariable("client_id") long client_id) {
+    @GetMapping("/info/{id}")
+    public Contact info(@PathVariable("id") long id) {
+        Optional<Contact> contact = contactDao.findById(id);
 
-        if(clientDao.findById(client_id).isPresent())
-            return contactDao.findAllByClient(clientDao.findById(client_id).get());
+        return contact.orElse(null);
+    }
+
+    @GetMapping("/list")
+    public List<Contact> list() {
+
+        return contactDao.findAllBy();
+    }
+
+    @GetMapping("/list/{id}")
+    public List<Contact> list(@PathVariable("id") long id) {
+
+        if(clientDao.findById(id).isPresent())
+            return contactDao.findAllByClient(clientDao.findById(id).get());
         else
             return new ArrayList<>();
     }

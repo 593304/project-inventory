@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div id="profileSection" th:fragment="profiles" class="three columns hidden" style="margin-left: 0; width: 26%;">
+            <div th:replace="fragments/profile/add-modal :: addModal"></div>
+            <div th:replace="fragments/profile/edit-modal :: editModal"></div>
+
+            <div class="navbar">
+                <div class="row">
+                    <div class="three columns disabled cursor-pointer" onclick="projectInventory.module.client.showSection()">
+                        <b>Clients</b>
+                    </div>
+                    <div class="three columns disabled cursor-pointer" onclick="projectInventory.module.contact.showSection()">
+                        <b>Contacts</b>
+                    </div>
+                    <div class="three columns">
+                        <b>Profiles</b>
+                    </div>
+                    <div class="three columns text-right">
+                        <button class="button-primary" type="button" onclick="projectInventory.module.profile.showAdd()"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact name</th>
+                            <th>Project info</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="profile : ${profiles}" th:id="'profile-' + ${profile.id}">
+                            <td class="name" th:text="${profile.name}"></td>
+                            <td class="contact" th:data="${profile.contact != null ? profile.contact.id : '-1'}">
+                                <span th:if="${profile.contact != null}" th:text="${profile.contact.firstName}"></span>
+                                <span th:if="${profile.contact != null}" th:text="${profile.contact.lastName}"></span>
+                                <span th:if="${profile.contact == null}">-</span>
+                            </td>
+                            <td class="project-info" th:text="${profile.overwriteProjectInfo ? profile.projectName + ' -- ' + profile.projectCode : 'Use default'}"></td>
+                            <td>
+                                <i class="fas fa-edit cursor-pointer" th:onclick="'projectInventory.module.profile.showEdit(' + ${profile.id} + ')'"></i>
+                            </td>
+                            <td>
+                                <i class="fas fa-times cursor-pointer" th:onclick="'projectInventory.module.profile.showDelete(' + ${profile.id} + ',\'' + ${profile.name} + '\')'"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
