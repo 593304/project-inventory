@@ -14,6 +14,7 @@ This is a hobby project with embedded webserver and in-memory database using **S
   * [Version-0.5.8](#version-058)
   * [Version-0.6.0](#version-060)
   * [Version-0.6.7](#version-067)
+  * [Version-0.7.2](#version-072)
 * [ToDo](#todo)
 
 ## Description
@@ -56,11 +57,15 @@ Added the basics of working times. Now can add, edit or delete worktimes.
 
 Cleaned java and javascript codes. Checked existing functionality. Added Profile entity for worktime export.
 
+### Version-0.7.2
+
+Worktime export modal and working time list modal for project added to the frontend. Some fixes. Missing the export business logic.
+
 ## ToDo
 
 - [ ] Scrollable modals
 - [x] Projects
-   - [ ] Worktime list
+   - [x] Worktime list
 - [x] Notes
    - [x] Comments
 - [x] Working times

@@ -22,19 +22,19 @@ public class NoteRestController {
     private NoteDao noteDao;
 
     @GetMapping("/list/{project_id}")
-    public List<Note> list(@PathVariable("project_id") long project_id) {
+    public List<Note> list(@PathVariable("project_id") long projectId) {
 
-        if(projectDao.findById(project_id).isPresent())
-            return noteDao.findAllByProject(projectDao.findById(project_id).get());
+        if(projectDao.findById(projectId).isPresent())
+            return noteDao.findAllByProject(projectDao.findById(projectId).get());
         else
             return new ArrayList<>();
     }
 
     @GetMapping("/comment/get/{note_id}")
-    public List<String> listComments(@PathVariable("note_id") long note_id) {
+    public List<String> listComments(@PathVariable("note_id") long noteId) {
 
-        if(noteDao.findById(note_id).isPresent())
-            return noteDao.findById(note_id).get().getComments();
+        if(noteDao.findById(noteId).isPresent())
+            return noteDao.findById(noteId).get().getComments();
         else
             return new ArrayList<>();
     }

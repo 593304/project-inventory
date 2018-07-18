@@ -10,7 +10,7 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "contact_id")
     private Contact contact;
     @Column(name = "overwrite_project_info")

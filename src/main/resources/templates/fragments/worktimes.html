@@ -3,8 +3,8 @@
     <head />
     <body>
         <div id="worktimeSection" th:fragment="worktimes" class="nine columns hidden" style="margin-left: 0;">
+            <div th:replace="fragments/worktime/export-modal :: exportModal"></div>
             <div th:replace="fragments/worktime/add-modal :: addModal"></div>
-
             <div th:replace="fragments/worktime/edit-modal :: editModal"></div>
 
             <div class="navbar">

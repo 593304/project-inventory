@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head />
+    <body>
+        <div th:fragment="listWorktimesModal" id="listWorktimes" class="modal hidden">
+            <div class="modal-window">
+                <div class="row modal-content">
+                    <div class="twelve columns">
+                        <table class="u-full-width">
+                            <thead>
+                                <tr>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Description</th>
+                                    <th>Exported</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row modal-button">
+                    <div class="twelve columns">
+                        <button class="button-primary" type="button" onclick="projectInventory.module.project.hideWorktimes()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -43,6 +43,7 @@ public class HomeController {
         model.put("editWorktimeForm", new EditWorktimeForm());
         model.put("profileForm", new ProfileForm());
         model.put("editProfileForm", new EditProfileForm());
+        model.put("worktimeExportForm", new WorktimeExportForm());
 
         model.put("clients", clientDao.findAllBy());
         model.put("projects", projectDao.findAllBy());
