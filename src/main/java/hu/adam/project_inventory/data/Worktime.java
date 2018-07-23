@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "work_time")
-public class WorkTime {
+public class Worktime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,10 +35,10 @@ public class WorkTime {
     @JsonIgnore
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-    public WorkTime() {
+    public Worktime() {
     }
 
-    public WorkTime(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, String description, Project project) {
+    public Worktime(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, String description, Project project) {
         this.start = LocalDateTime.of(startDate, startTime);
         this.end = LocalDateTime.of(endDate, endTime);
         this.description = description;
@@ -116,12 +116,12 @@ public class WorkTime {
 
     @Override
     public String toString() {
-        return "WorkTime{" +
+        return "Worktime{" +
                 "id=" + id +
                 ", start=" + start +
                 ", end=" + end +
                 ", exported=" + exported +
-                ", project=" + project +
+                ", project=" + project.getName() +
                 '}';
     }
 }

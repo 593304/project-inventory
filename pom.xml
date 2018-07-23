@@ -6,7 +6,7 @@
 
     <groupId>hu.adam</groupId>
     <artifactId>project-inventory</artifactId>
-    <version>0.7.2</version>
+    <version>0.8.5</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -43,6 +43,23 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.197</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mnode.ical4j</groupId>
+            <artifactId>ical4j</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-csv</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+            <version>2.9.6</version>
         </dependency>
 
         <dependency>

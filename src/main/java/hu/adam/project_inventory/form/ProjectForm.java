@@ -9,6 +9,8 @@ public class ProjectForm {
 
     private String name;
     private String code;
+    private String projectManager;
+    private String serviceManager;
     private long client;
     private ProjectStatus status;
     private ProjectPriority priority;
@@ -16,9 +18,11 @@ public class ProjectForm {
     public ProjectForm() {
     }
 
-    public ProjectForm(String name, String code, long client, ProjectStatus status, ProjectPriority priority) {
+    public ProjectForm(String name, String code, String projectManager, String serviceManager, long client, ProjectStatus status, ProjectPriority priority) {
         this.name = name;
         this.code = code;
+        this.projectManager = projectManager;
+        this.serviceManager = serviceManager;
         this.client = client;
         this.status = status;
         this.priority = priority;
@@ -38,6 +42,22 @@ public class ProjectForm {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getProjectManager() {
+        return projectManager;
+    }
+
+    public void setProjectManager(String projectManager) {
+        this.projectManager = projectManager;
+    }
+
+    public String getServiceManager() {
+        return serviceManager;
+    }
+
+    public void setServiceManager(String serviceManager) {
+        this.serviceManager = serviceManager;
     }
 
     public long getClient() {
@@ -65,6 +85,6 @@ public class ProjectForm {
     }
 
     public Project getProject(Client client) {
-        return new Project(name, code, client, status, priority);
+        return new Project(name, code, projectManager, serviceManager, client, status, priority);
     }
 }

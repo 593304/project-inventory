@@ -1,7 +1,7 @@
 package hu.adam.project_inventory.form;
 
 import hu.adam.project_inventory.data.Project;
-import hu.adam.project_inventory.data.WorkTime;
+import hu.adam.project_inventory.data.Worktime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -80,7 +80,7 @@ public class WorktimeForm {
         this.project = project;
     }
 
-    public WorkTime getWorktime(Project project) {
-        return new WorkTime(startDate, startTime, endDate, endTime, description, project);
+    public Worktime getWorktime(Project project) {
+        return new Worktime(startDate, startTime, endDate, endTime, description, project);
     }
 }

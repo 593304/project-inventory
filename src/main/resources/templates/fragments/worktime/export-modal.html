@@ -4,93 +4,97 @@
     <body>
         <div th:fragment="exportModal" id="worktimeExport" class="modal hidden">
             <div class="modal-window">
-                <form method="post" th:object="${worktimeExportForm}">
-                    <label>Export range</label>
-                    <div class="row">
-                        <div class="four columns">
-                            <label>
-                                Today
-                                <span class="custom-checkbox-container">
-                                    <input class="today" type="checkbox" th:field="*{today}" />
-                                    <span class="custom-checkbox" onclick="projectInventory.module.worktime.toggleCheckbox('today')"></span>
-                                </span>
-                            </label>
-                        </div>
-                        <div class="four columns">
-                            <label>
-                                This week
-                                <span class="custom-checkbox-container">
-                                    <input class="this-week" type="checkbox" th:field="*{thisWeek}" />
-                                    <span class="custom-checkbox" onclick="projectInventory.module.worktime.toggleCheckbox('this-week')"></span>
-                                </span>
-                            </label>
-                        </div>
-                        <div class="four columns">
-                            <label>
-                                This month
-                                <span class="custom-checkbox-container">
-                                    <input class="this-month" type="checkbox" th:field="*{thisMonth}" />
-                                    <span class="custom-checkbox" onclick="projectInventory.module.worktime.toggleCheckbox('this-month')"></span>
-                                </span>
-                            </label>
-                        </div>
+                <label>Export range</label>
+                <div class="row">
+                    <div class="four columns">
+                        <label>
+                            Today
+                            <span class="custom-checkbox-container">
+                                <input class="today" type="checkbox" />
+                                <span class="custom-checkbox" onclick="projectInventory.module.worktime.toggleCheckbox('today')"></span>
+                            </span>
+                        </label>
                     </div>
-                    <div class="row">
-                        <div class="twelve columns">
-                            <label>
-                                Custom range
-                                <span class="custom-checkbox-container">
-                                    <input class="custom-range" type="checkbox" th:field="*{customRange}" />
-                                    <span class="custom-checkbox" onclick="projectInventory.module.worktime.toggleCheckbox('custom-range')"></span>
-                                </span>
-                            </label>
-                        </div>
+                    <div class="four columns">
+                        <label>
+                            This week
+                            <span class="custom-checkbox-container">
+                                <input class="this-week" type="checkbox" />
+                                <span class="custom-checkbox" onclick="projectInventory.module.worktime.toggleCheckbox('this-week')"></span>
+                            </span>
+                        </label>
                     </div>
-                    <div class="row">
-                        <div class="three columns">
-                            <label>
-                                Start date
-                                <input class="u-full-width start-date" type="date" th:field="*{startDate}" />
-                            </label>
-                        </div>
-                        <div class="three columns">
-                            <label>
-                                Start time
-                                <input class="u-full-width start-time" type="time" th:field="*{startTime}" />
-                            </label>
-                        </div>
-                        <div class="three columns">
-                            <label>
-                                End date
-                                <input class="u-full-width end-date" type="date" th:field="*{endDate}" />
-                            </label>
-                        </div>
-                        <div class="three columns">
-                            <label>
-                                End time
-                                <input class="u-full-width end-time" type="time" th:field="*{endTime}" />
-                            </label>
-                        </div>
+                    <div class="four columns">
+                        <label>
+                            This month
+                            <span class="custom-checkbox-container">
+                                <input class="this-month" type="checkbox" />
+                                <span class="custom-checkbox" onclick="projectInventory.module.worktime.toggleCheckbox('this-month')"></span>
+                            </span>
+                        </label>
                     </div>
-                    <div class="row">
-                        <div id="worktimeProfileAdd" class="twelve columns">
-                            <label>
-                                Profile name
-                                <select class="u-full-width project" th:field="*{profile}">
-                                    <option value="-1">-</option>
-                                </select>
-                            </label>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="twelve columns">
+                        <label>
+                            Custom range
+                            <span class="custom-checkbox-container">
+                                <input class="custom-range" type="checkbox" />
+                                <span class="custom-checkbox" onclick="projectInventory.module.worktime.toggleCheckbox('custom-range')"></span>
+                            </span>
+                        </label>
                     </div>
-                    <div class="row modal-button">
-                        <div class="twelve columns">
-                            <button class="button-primary" type="button" onclick="projectInventory.module.worktime.hideExport()">Cancel</button>
-                            <button class="button ics-export" type="button" onclick="projectInventory.module.worktime.icsExport()">ICS export</button>
-                            <button class="button innobyte-export" type="button" onclick="projectInventory.module.worktime.innobyteExport()">Innobyte export</button>
-                            <button class="button tsystems-export" type="button" onclick="projectInventory.module.worktime.tsystemsExport()">T-Systems export</button>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="three columns">
+                        <label>
+                            Start date
+                            <input class="u-full-width start-date" type="date" />
+                        </label>
                     </div>
-                </form>
+                    <div class="three columns">
+                        <label>
+                            Start time
+                            <input class="u-full-width start-time" type="time" />
+                        </label>
+                    </div>
+                    <div class="three columns">
+                        <label>
+                            End date
+                            <input class="u-full-width end-date" type="date" />
+                        </label>
+                    </div>
+                    <div class="three columns">
+                        <label>
+                            End time
+                            <input class="u-full-width end-time" type="time" />
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="worktimeProfileAdd" class="twelve columns">
+                        <label>
+                            Profile name
+                            <select class="u-full-width project">
+                                <option value="-1">-</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="row modal-button">
+                    <div class="twelve columns">
+                        <button class="button-primary" type="button" onclick="projectInventory.module.worktime.hideExport()">Cancel</button>
+                        <button class="button" type="button" onclick="projectInventory.module.worktime.icsExport()">ICS export</button>
+                        <a class="hidden ics-export" th:href="@{/worktimes/export/ics/download}">ICS export</a>
+                        <button class="button" type="button" onclick="projectInventory.module.worktime.innobyteExport()">Innobyte export</button>
+                        <a class="hidden innobyte-export" th:href="@{/worktimes/export/innobyte/download}">Innobyte export</a>
+                        <button class="button" type="button" onclick="projectInventory.module.worktime.tsystemsExport()">T-Systems export</button>
+                        <a class="hidden tsystems-export" th:href="@{/worktimes/export/tsystems/download}">T-Systems export</a>
+                    </div>
+                </div>
+                <div class="row error-row hidden">
+                    <div class="twelve columns error-message"></div>
+                </div>
             </div>
         </div>
     </body>

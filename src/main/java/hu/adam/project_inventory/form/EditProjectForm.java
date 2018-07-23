@@ -12,8 +12,8 @@ public class EditProjectForm extends ProjectForm {
     public EditProjectForm() {
     }
 
-    public EditProjectForm(String name, String code, long client, ProjectStatus status, ProjectPriority priority, long id) {
-        super(name, code, client, status, priority);
+    public EditProjectForm(String name, String code, String projectManager, String serviceManager, long client, ProjectStatus status, ProjectPriority priority, long id) {
+        super(name, code, projectManager, serviceManager, client, status, priority);
         this.id = id;
     }
 

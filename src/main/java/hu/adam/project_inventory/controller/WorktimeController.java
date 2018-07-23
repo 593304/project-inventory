@@ -1,9 +1,9 @@
 package hu.adam.project_inventory.controller;
 
 import hu.adam.project_inventory.data.Project;
-import hu.adam.project_inventory.data.WorkTime;
+import hu.adam.project_inventory.data.Worktime;
 import hu.adam.project_inventory.data.dao.ProjectDao;
-import hu.adam.project_inventory.data.dao.WorkTimeDao;
+import hu.adam.project_inventory.data.dao.WorktimeDao;
 import hu.adam.project_inventory.form.EditWorktimeForm;
 import hu.adam.project_inventory.form.WorktimeForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class WorktimeController {
     @Autowired
     private ProjectDao projectDao;
     @Autowired
-    private WorkTimeDao workTimeDao;
+    private WorktimeDao worktimeDao;
 
     @PostMapping("")
     public String save(@ModelAttribute WorktimeForm worktimeForm) {
@@ -43,20 +43,20 @@ public class WorktimeController {
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") long id) {
 
-        workTimeDao.deleteById(id);
+        worktimeDao.deleteById(id);
 
         return "redirect:/";
     }
 
     private void store(WorktimeForm worktimeForm) {
         Optional<Project> project = projectDao.findById(worktimeForm.getProject());
-        WorkTime workTime;
+        Worktime worktime;
 
         if(project.isPresent())
-            workTime = worktimeForm.getWorktime(project.get());
+            worktime = worktimeForm.getWorktime(project.get());
         else
-            workTime = worktimeForm.getWorktime(null);
+            worktime = worktimeForm.getWorktime(null);
 
-        workTimeDao.save(workTime);
+        worktimeDao.save(worktime);
     }
 }

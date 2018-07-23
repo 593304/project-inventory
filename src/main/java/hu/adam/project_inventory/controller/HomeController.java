@@ -24,7 +24,7 @@ public class HomeController {
     @Autowired
     private NoteDao noteDao;
     @Autowired
-    private WorkTimeDao workTimeDao;
+    private WorktimeDao worktimeDao;
     @Autowired
     private ProfileDao profileDao;
 
@@ -49,7 +49,7 @@ public class HomeController {
         model.put("projects", projectDao.findAllBy());
         model.put("contacts", contactDao.findAllBy());
         model.put("notes", noteDao.findAllByOrderByDateDesc());
-        model.put("worktimes", workTimeDao.findAllByOrderByStartDescProjectAsc());
+        model.put("worktimes", worktimeDao.findAllByOrderByStartDescProjectAsc());
         model.put("profiles", profileDao.findAll());
 
         model.put("statuses", ProjectStatus.values());

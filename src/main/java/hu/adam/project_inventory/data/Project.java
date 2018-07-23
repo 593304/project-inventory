@@ -18,6 +18,10 @@ public class Project {
     private String name;
     @Column(unique = true)
     private String code;
+    @Column(name = "project_manager")
+    private String projectManager;
+    @Column(name = "service_manager")
+    private String serviceManager;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
@@ -31,16 +35,18 @@ public class Project {
     private List<Note> notes;
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<WorkTime> workTimes;
+    private List<Worktime> worktimes;
 
     public Project() {
         notes = new ArrayList<>();
-        workTimes = new ArrayList<>();
+        worktimes = new ArrayList<>();
     }
 
-    public Project(String name, String code, Client client, ProjectStatus status, ProjectPriority priority) {
+    public Project(String name, String code, String projectManager, String serviceManager, Client client, ProjectStatus status, ProjectPriority priority) {
         this.name = name;
         this.code = code;
+        this.projectManager = projectManager;
+        this.serviceManager = serviceManager;
         this.client = client;
         this.status = status;
         this.priority = priority;
@@ -68,6 +74,22 @@ public class Project {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getProjectManager() {
+        return projectManager;
+    }
+
+    public void setProjectManager(String projectManager) {
+        this.projectManager = projectManager;
+    }
+
+    public String getServiceManager() {
+        return serviceManager;
+    }
+
+    public void setServiceManager(String serviceManager) {
+        this.serviceManager = serviceManager;
     }
 
     public Client getClient() {
@@ -102,12 +124,12 @@ public class Project {
         this.notes = notes;
     }
 
-    public List<WorkTime> getWorkTimes() {
-        return workTimes;
+    public List<Worktime> getWorktimes() {
+        return worktimes;
     }
 
-    public void setWorkTimes(List<WorkTime> workTimes) {
-        this.workTimes = workTimes;
+    public void setWorktimes(List<Worktime> worktimes) {
+        this.worktimes = worktimes;
     }
 
     @Override
@@ -116,11 +138,13 @@ public class Project {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", code='" + code + '\'' +
-                ", client='" + client.toString() + '\'' +
+                ", projectManager='" + projectManager + '\'' +
+                ", serviceManager='" + serviceManager + '\'' +
+                ", client=" + client +
                 ", status=" + status +
                 ", priority=" + priority +
                 ", notes=" + notes +
-                ", workTimes=" + workTimes +
+                ", worktimes=" + worktimes +
                 '}';
     }
 }

@@ -31,6 +31,8 @@
                         <tr>
                             <th>Name</th>
                             <th>Code</th>
+                            <th>Project manager</th>
+                            <th>Service manager</th>
                             <th>Client</th>
                             <th>Status</th>
                             <th>Priority</th>
@@ -47,6 +49,8 @@
                                 <span class="name" th:text="${project.name}"></span>
                             </td>
                             <td class="code" th:text="${project.code}"></td>
+                            <td class="project-manager" th:text="${#strings.isEmpty(project.projectManager) ? '-' : project.projectManager}"></td>
+                            <td class="service-manager" th:text="${#strings.isEmpty(project.serviceManager) ? '-' : project.serviceManager}"></td>
                             <td class="client" th:text="${project.client != null ? project.client.name : '-'}" th:data="${project.client != null ? project.client.id : '-1'}"></td>
                             <td class="status" th:text="${project.status}"></td>
                             <td class="priority" th:text="${project.priority}"></td>

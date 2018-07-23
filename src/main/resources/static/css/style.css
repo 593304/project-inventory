@@ -276,3 +276,7 @@ td li:last-child {
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
+
+.error-row {
+    color: red;
+}

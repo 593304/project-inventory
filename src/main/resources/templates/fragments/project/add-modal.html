@@ -21,6 +21,20 @@
                     </div>
                     <div class="row">
                         <div class="six columns">
+                            <label>
+                                Project manager
+                                <input class="u-full-width project-manager" type="text" th:field="*{projectManager}" />
+                            </label>
+                        </div>
+                        <div class="six columns">
+                            <label>
+                                Service manager
+                                <input class="u-full-width service-manager" type="text" th:field="*{serviceManager}" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="six columns">
                             <label for="projectStatusAdd">Project status</label>
                             <select id="projectStatusAdd" th:field="*{status}">
                                 <option th:each="myStatus : ${statuses}"

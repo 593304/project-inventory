@@ -1263,6 +1263,8 @@ projectInventory.module.project = (function() {
             $(selectors.projectEdit + ' .id').val(id);
             $(selectors.projectEdit + ' .name').val($(selectedRow + ' .name').html());
             $(selectors.projectEdit + ' .code').val($(selectedRow + ' .code').html());
+            $(selectors.projectEdit + ' .project-manager').val($(selectedRow + ' .project-manager').html());
+            $(selectors.projectEdit + ' .service-manager').val($(selectedRow + ' .service-manager').html());
             $(selectors.projectStatusEdit).val($(selectedRow + ' .status').html());
             $(selectors.projectPriorityEdit).val($(selectedRow + ' .priority').html());
 
@@ -1817,11 +1819,91 @@ projectInventory.module.worktime = (function() {
             });
         },
 
-        _icsExport = function() {},
+        getExportSettings = function() {
+            return {
+                today : $(selectors.worktimeExport + ' .today').prop('checked'),
+                thisWeek : $(selectors.worktimeExport + ' .this-week').prop('checked'),
+                thisMonth : $(selectors.worktimeExport + ' .this-month').prop('checked'),
+                customRange : $(selectors.worktimeExport + ' .custom-range').prop('checked'),
+                startDate : $(selectors.worktimeExport + ' .start-date').val(),
+                startTime : $(selectors.worktimeExport + ' .start-time').val(),
+                endDate : $(selectors.worktimeExport + ' .end-date').val(),
+                endTime : $(selectors.worktimeExport + ' .end-time').val(),
+                profile : $(selectors.worktimeProfileAdd + ' select').val()
+            }
+        },
 
-        _innobyteExport = function() {},
+        _icsExport = function() {
+            var functionName = moduleName + '.icsExport';
+            logger.debug(functionName, 'Getting ics file from server');
 
-        _tsystemsExport = function() {},
+            $.ajax({
+                url: projectInventory.app.appPath + "/worktimes/export/init",
+                method : 'POST',
+                timeout : projectInventory.app.timeout,
+                contentType  : 'application/json',
+                data : JSON.stringify(getExportSettings())
+            })
+                .done(function() {
+                    $(selectors.worktimeExport + ' .error-row').addClass('hidden');
+
+                    $(selectors.worktimeExport + ' .ics-export')[0].click();
+                })
+                .fail(function(response) {
+                    $(selectors.worktimeExport + ' .error-row').removeClass('hidden');
+                    $(selectors.worktimeExport + ' .error-message').html(response.responseText);
+
+                    logger.error(functionName, response.responseText);
+                });
+        },
+
+        _innobyteExport = function() {
+            var functionName = moduleName + '.innobyteExport';
+            logger.debug(functionName, 'Getting csv file from server');
+
+            $.ajax({
+                url: projectInventory.app.appPath + "/worktimes/export/init",
+                method : 'POST',
+                timeout : projectInventory.app.timeout,
+                contentType  : 'application/json',
+                data : JSON.stringify(getExportSettings())
+            })
+                .done(function() {
+                    $(selectors.worktimeExport + ' .error-row').addClass('hidden');
+
+                    $(selectors.worktimeExport + ' .innobyte-export')[0].click();
+                })
+                .fail(function(response) {
+                    $(selectors.worktimeExport + ' .error-row').removeClass('hidden');
+                    $(selectors.worktimeExport + ' .error-message').html(response.responseText);
+
+                    logger.error(functionName, response.responseText);
+                });
+        },
+
+        _tsystemsExport = function() {
+            var functionName = moduleName + '.tsystemsExport';
+            logger.debug(functionName, 'Getting csv file from server');
+
+            $.ajax({
+                url: projectInventory.app.appPath + "/worktimes/export/init",
+                method : 'POST',
+                timeout : projectInventory.app.timeout,
+                contentType  : 'application/json',
+                data : JSON.stringify(getExportSettings())
+            })
+                .done(function() {
+                    $(selectors.worktimeExport + ' .error-row').addClass('hidden');
+
+                    $(selectors.worktimeExport + ' .tsystems-export')[0].click();
+                })
+                .fail(function(response) {
+                    $(selectors.worktimeExport + ' .error-row').removeClass('hidden');
+                    $(selectors.worktimeExport + ' .error-message').html(response.responseText);
+
+                    logger.error(functionName, response.responseText);
+                });
+        },
 
         _hideExport = function() {
             var functionName = moduleName + '.hideExport';
@@ -1834,6 +1916,8 @@ projectInventory.module.worktime = (function() {
             $(selectors.worktimeProfileAdd + ' select').html(elements.defaultOptionElement);
             $(selectors.worktimeExport + ' input').val('');
             $(selectors.worktimeExport + ' input[type="checkbox"]').prop('checked', false);
+
+            $(selectors.worktimeExport + ' .error-row').addClass('hidden');
         },
 
         getDateTimeFrom = function(startDatetime, plusHours) {

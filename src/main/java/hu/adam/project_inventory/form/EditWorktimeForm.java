@@ -1,7 +1,7 @@
 package hu.adam.project_inventory.form;
 
 import hu.adam.project_inventory.data.Project;
-import hu.adam.project_inventory.data.WorkTime;
+import hu.adam.project_inventory.data.Worktime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,10 +27,10 @@ public class EditWorktimeForm extends WorktimeForm {
     }
 
     @Override
-    public WorkTime getWorktime(Project project) {
-        WorkTime workTime = super.getWorktime(project);
-        workTime.setId(id);
+    public Worktime getWorktime(Project project) {
+        Worktime worktime = super.getWorktime(project);
+        worktime.setId(id);
 
-        return workTime;
+        return worktime;
     }
 }

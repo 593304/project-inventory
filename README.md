@@ -15,6 +15,7 @@ This is a hobby project with embedded webserver and in-memory database using **S
   * [Version-0.6.0](#version-060)
   * [Version-0.6.7](#version-067)
   * [Version-0.7.2](#version-072)
+  * [Version-0.8.5](#version-085)
 * [ToDo](#todo)
 
 ## Description
@@ -61,15 +62,21 @@ Cleaned java and javascript codes. Checked existing functionality. Added Profile
 
 Worktime export modal and working time list modal for project added to the frontend. Some fixes. Missing the export business logic.
 
+### Version-0.8.5
+
+Modified project entity and added project manager and service manager to the class. Refactored the connected classes and codes. Now the user is able to export the worktimes if a worktime contains a project.
+
 ## ToDo
 
 - [ ] Scrollable modals
+- [ ] Scrollable modals after window resize
 - [x] Projects
    - [x] Worktime list
 - [x] Notes
    - [x] Comments
 - [x] Working times
-   - [ ] ICS export
-   - [ ] CSV export
+   - [x] ICS export
+   - [x] CSV export
 - [ ] Front-end fixes for smaller resolutions
 - [ ] Search
+- [ ] Error handling
