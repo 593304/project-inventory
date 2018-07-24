@@ -88,6 +88,8 @@
                         <a class="hidden ics-export" th:href="@{/worktimes/export/ics/download}">ICS export</a>
                         <button class="button" type="button" onclick="projectInventory.module.worktime.innobyteExport()">Innobyte export</button>
                         <a class="hidden innobyte-export" th:href="@{/worktimes/export/innobyte/download}">Innobyte export</a>
+                        <button class="button innobyte-monthly-export-button hidden" type="button" onclick="projectInventory.module.worktime.innobyteMonthlyExport()">Innobyte monthly export</button>
+                        <a class="hidden innobyte-monthly-export" th:href="@{/worktimes/export/innobyte-monthly/download}">Innobyte monthly export</a>
                         <button class="button" type="button" onclick="projectInventory.module.worktime.tsystemsExport()">T-Systems export</button>
                         <a class="hidden tsystems-export" th:href="@{/worktimes/export/tsystems/download}">T-Systems export</a>
                     </div>

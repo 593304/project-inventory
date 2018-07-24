@@ -1814,9 +1814,15 @@ projectInventory.module.worktime = (function() {
             logger.debug(functionName, 'Toggle checkboxes in export worktime modal');
 
             $(selectors.worktimeExport + ' input[type="checkbox"]').each(function() {
-                if(!$(this).hasClass(name))
+                if(!$(this).hasClass(name)) {
                     $(this).prop('checked', false);
+                }
             });
+
+            if(name == 'this-month' && !$(selectors.worktimeExport + ' .' + name).prop('checked'))
+                $(selectors.worktimeExport + ' .innobyte-monthly-export-button').removeClass('hidden');
+            else
+                $(selectors.worktimeExport + ' .innobyte-monthly-export-button').addClass('hidden');
         },
 
         getExportSettings = function() {
@@ -1872,6 +1878,30 @@ projectInventory.module.worktime = (function() {
                     $(selectors.worktimeExport + ' .error-row').addClass('hidden');
 
                     $(selectors.worktimeExport + ' .innobyte-export')[0].click();
+                })
+                .fail(function(response) {
+                    $(selectors.worktimeExport + ' .error-row').removeClass('hidden');
+                    $(selectors.worktimeExport + ' .error-message').html(response.responseText);
+
+                    logger.error(functionName, response.responseText);
+                });
+        },
+
+        _innobyteMonthlyExport = function() {
+            var functionName = moduleName + '.innobyteMonthlyExport';
+            logger.debug(functionName, 'Getting csv file from server');
+
+            $.ajax({
+                url: projectInventory.app.appPath + "/worktimes/export/init",
+                method : 'POST',
+                timeout : projectInventory.app.timeout,
+                contentType  : 'application/json',
+                data : JSON.stringify(getExportSettings())
+            })
+                .done(function() {
+                    $(selectors.worktimeExport + ' .error-row').addClass('hidden');
+
+                    $(selectors.worktimeExport + ' .innobyte-monthly-export')[0].click();
                 })
                 .fail(function(response) {
                     $(selectors.worktimeExport + ' .error-row').removeClass('hidden');
@@ -2141,20 +2171,21 @@ projectInventory.module.worktime = (function() {
         };
 
     return {
-        showSection         : _showSection,
-        showExport          : _showExport,
-        toggleCheckbox      : _toggleCheckbox,
-        icsExport           : _icsExport,
-        innobyteExport      : _innobyteExport,
-        tsystemsExport      : _tsystemsExport,
-        hideExport          : _hideExport,
-        updateEndDateTime   : _updateEndDateTime,
-        showAdd             : _showAdd,
-        hideAdd             : _hideAdd,
-        showEdit            : _showEdit,
-        hideEdit            : _hideEdit,
-        showDelete          : _showDelete,
-        hideDelete          : _hideDelete
+        showSection             : _showSection,
+        showExport              : _showExport,
+        toggleCheckbox          : _toggleCheckbox,
+        icsExport               : _icsExport,
+        innobyteExport          : _innobyteExport,
+        innobyteMonthlyExport   : _innobyteMonthlyExport,
+        tsystemsExport          : _tsystemsExport,
+        hideExport              : _hideExport,
+        updateEndDateTime       : _updateEndDateTime,
+        showAdd                 : _showAdd,
+        hideAdd                 : _hideAdd,
+        showEdit                : _showEdit,
+        hideEdit                : _hideEdit,
+        showDelete              : _showDelete,
+        hideDelete              : _hideDelete
     }
 }());
 

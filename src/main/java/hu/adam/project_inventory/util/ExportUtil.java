@@ -6,9 +6,12 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import hu.adam.project_inventory.data.Contact;
 import hu.adam.project_inventory.data.Worktime;
+import hu.adam.project_inventory.data.export.InnobyteMonthlyProfile;
 import hu.adam.project_inventory.data.export.InnobyteProfile;
 import hu.adam.project_inventory.data.export.TSystemsProfile;
 import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.parameter.Cn;
@@ -20,15 +23,21 @@ import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.util.RandomUidGenerator;
 
 import java.net.URI;
-import java.time.Duration;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 
 public class ExportUtil {
 
-    private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private static final Map<String, DateTimeFormatter> formatters;
+    static {
+        formatters = new HashMap<>();
+        formatters.put("date", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        formatters.put("time", DateTimeFormatter.ofPattern("HH:mm:ss"));
+        formatters.put("timeMonthly", DateTimeFormatter.ofPattern("H, m"));
+    }
+
+    private static final long workMinutes = 480L;
 
     public static String getIcsString(List<Worktime> worktimes, Contact contact) {
         VTimeZone tz = TimeZoneRegistryFactory
@@ -98,10 +107,10 @@ public class ExportUtil {
                         null,
                         worktime.getDescription(),
                         null,
-                        dateFormatter.format(worktime.getStart()),
-                        timeFormatter.format(worktime.getStart()),
-                        dateFormatter.format(worktime.getEnd()),
-                        timeFormatter.format(worktime.getEnd()),
+                        formatters.get("date").format(worktime.getStart()),
+                        formatters.get("time").format(worktime.getStart()),
+                        formatters.get("date").format(worktime.getEnd()),
+                        formatters.get("time").format(worktime.getEnd()),
                         durationToString(Duration.between(worktime.getStart(), worktime.getEnd())),
                         null,
                         null
@@ -124,6 +133,61 @@ public class ExportUtil {
         return innobyteExport.toString();
     }
 
+    public static String getInnobyteMonthlyString(List<Worktime> worktimes) {
+        CsvMapper mapper = new CsvMapper();
+        mapper.registerModule(new Jdk8Module());
+
+        CsvSchema schema = mapper.schemaFor(InnobyteMonthlyProfile.class).withHeader();
+
+        StringBuilder innobyteMonthlyExport = new StringBuilder();
+        boolean firstRun = true;
+        int lastDayOfMonth = worktimes.get(0).getStart().toLocalDate().lengthOfMonth();
+        LocalTime time = null;
+
+        Set<Integer> workDates = new HashSet<>();
+        for (Worktime worktime : worktimes) {
+            if(worktime.getProject() != null) {
+                workDates.add(worktime.getStart().getDayOfMonth());
+
+                if(time == null)
+                    time = LocalTime.of(9, 0,0);
+            }
+        }
+
+        for (int i = 1; i < lastDayOfMonth + 1; i++) {
+            LocalDate day = worktimes.get(0).getStart().toLocalDate().withDayOfMonth(i);
+            InnobyteMonthlyProfile innobyte;
+
+            if(day.getDayOfWeek() == DayOfWeek.SATURDAY || day.getDayOfWeek() == DayOfWeek.SUNDAY || !workDates.contains(i))
+                innobyte = new InnobyteMonthlyProfile(Integer.toString(i));
+            else {
+                LocalDateTime start = LocalDateTime.of(day, time);
+                LocalDateTime end = LocalDateTime.of(day, time.plusMinutes((workMinutes)));
+
+                innobyte = new InnobyteMonthlyProfile(
+                        Integer.toString(i),
+                        formatters.get("timeMonthly").format(start),
+                        formatters.get("timeMonthly").format(end),
+                        Double.toString((double)workMinutes / 60)
+                );
+            }
+
+            try {
+                String csvLine = mapper.writer(schema).writeValueAsString(innobyte);
+                innobyteMonthlyExport.append(csvLine);
+
+                if (firstRun) {
+                    schema = schema.withoutHeader();
+                    firstRun = false;
+                }
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return innobyteMonthlyExport.toString();
+    }
+
     public static String getTSystemsString(List<Worktime> worktimes, Contact contact) {
         CsvMapper mapper = new CsvMapper();
         mapper.registerModule(new Jdk8Module());
@@ -142,10 +206,10 @@ public class ExportUtil {
                         worktime.getProject().getProjectManager(),
                         worktime.getProject().getServiceManager(),
                         worktime.getDescription(),
-                        dateFormatter.format(worktime.getStart()),
-                        timeFormatter.format(worktime.getStart()),
-                        dateFormatter.format(worktime.getEnd()),
-                        timeFormatter.format(worktime.getEnd()),
+                        formatters.get("date").format(worktime.getStart()),
+                        formatters.get("time").format(worktime.getStart()),
+                        formatters.get("date").format(worktime.getEnd()),
+                        formatters.get("time").format(worktime.getEnd()),
                         durationToString(Duration.between(worktime.getStart(), worktime.getEnd()))
                 );
 

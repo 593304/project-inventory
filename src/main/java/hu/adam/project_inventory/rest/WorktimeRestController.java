@@ -33,11 +33,13 @@ public class WorktimeRestController {
         contentTypes = new HashMap<>();
         contentTypes.put("ics", MediaType.parseMediaType("text/calendar; charset=UTF-8"));
         contentTypes.put("inno", MediaType.parseMediaType("text/csv; charset=UTF-8"));
+        contentTypes.put("innoMonthly", MediaType.parseMediaType("text/csv; charset=UTF-8"));
         contentTypes.put("tsm", MediaType.parseMediaType("text/csv; charset=UTF-8"));
 
         contentDispositions = new HashMap<>();
         contentDispositions.put("ics", "attachment; filename=\"ics-export-%s.ics\"");
         contentDispositions.put("inno", "attachment; filename=\"inno-export-%s.csv\"");
+        contentDispositions.put("innoMonthly", "attachment; filename=\"inno-monthly-export-%s.csv\"");
         contentDispositions.put("tsm", "attachment; filename=\"tsm-export-%s.csv\"");
     }
 
@@ -113,6 +115,21 @@ public class WorktimeRestController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", contentTypes.get("inno").toString());
         headers.set("Content-Disposition", String.format(contentDispositions.get("inno"), formatter.format(LocalDateTime.now())));
+
+        return new ResponseEntity<>(csv, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/export/innobyte-monthly/download")
+    @ResponseBody
+    private ResponseEntity<String> innobyteMonthlyDownload() {
+        String csv = ExportUtil.getInnobyteMonthlyString(lastWorktimes);
+
+        lastWorktimes = null;
+        lastProfile = null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", contentTypes.get("innoMonthly").toString());
+        headers.set("Content-Disposition", String.format(contentDispositions.get("innoMonthly"), formatter.format(LocalDateTime.now())));
 
         return new ResponseEntity<>(csv, headers, HttpStatus.OK);
     }

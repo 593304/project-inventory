@@ -16,6 +16,7 @@ This is a hobby project with embedded webserver and in-memory database using **S
   * [Version-0.6.7](#version-067)
   * [Version-0.7.2](#version-072)
   * [Version-0.8.5](#version-085)
+  * [Version-0.8.7](#version-087)
 * [ToDo](#todo)
 
 ## Description
@@ -65,6 +66,10 @@ Worktime export modal and working time list modal for project added to the front
 ### Version-0.8.5
 
 Modified project entity and added project manager and service manager to the class. Refactored the connected classes and codes. Now the user is able to export the worktimes if a worktime contains a project.
+
+### Version-0.8.7
+
+Added a new export functionality.
 
 ## ToDo
 
