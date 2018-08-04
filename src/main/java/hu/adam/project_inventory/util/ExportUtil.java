@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import hu.adam.project_inventory.data.Contact;
+import hu.adam.project_inventory.data.Profile;
 import hu.adam.project_inventory.data.Worktime;
 import hu.adam.project_inventory.data.export.InnobyteMonthlyProfile;
 import hu.adam.project_inventory.data.export.InnobyteProfile;
@@ -38,6 +39,7 @@ public class ExportUtil {
     }
 
     private static final long workMinutes = 480L;
+    private static final long lunchMinutes = 30L;
 
     public static String getIcsString(List<Worktime> worktimes, Contact contact) {
         VTimeZone tz = TimeZoneRegistryFactory
@@ -70,11 +72,18 @@ public class ExportUtil {
                 DateTime start = new DateTime(Date.from(worktime.getStart().atZone(ZoneId.systemDefault()).toInstant()));
                 DateTime end = new DateTime(Date.from(worktime.getEnd().atZone(ZoneId.systemDefault()).toInstant()));
 
+                String client = "";
+                if(worktime.getProject().getClient() != null)
+                    client = worktime.getProject().getClient().getAlias() + " -- ";
+                String project = "";
+                if(worktime.getProject().getCode() != null)
+                    project = " -- " + worktime.getProject().getCode().replaceFirst("-", "-|-");
+
                 VEvent meeting;
                 if (!worktime.getDescription().isEmpty())
-                    meeting = new VEvent(start, end, worktime.getDescription());
+                    meeting = new VEvent(start, end, client + worktime.getDescription() + project);
                 else
-                    meeting = new VEvent(start, end, "");
+                    meeting = new VEvent(start, end, client + "" + project);
 
                 meeting.getProperties().add(uid);
                 meeting.getProperties().add(tz.getTimeZoneId());
@@ -87,7 +96,7 @@ public class ExportUtil {
         return icsCalendar.toString();
     }
 
-    public static String getInnobyteString(List<Worktime> worktimes, Contact contact) {
+    public static String getInnobyteString(List<Worktime> worktimes, Profile profile) {
         CsvMapper mapper = new CsvMapper();
         mapper.registerModule(new Jdk8Module());
 
@@ -95,6 +104,7 @@ public class ExportUtil {
 
         StringBuilder innobyteExport = new StringBuilder();
         boolean firstRun = true;
+        Contact contact = profile.getContact();
 
         for (Worktime worktime : worktimes) {
             if(worktime.getProject() != null) {
@@ -102,8 +112,8 @@ public class ExportUtil {
                         contact.getLastName() + " " + contact.getFirstName(),
                         contact.getMail(),
                         null,
-                        worktime.getProject().getName(),
-                        worktime.getProject().getCode(),
+                        profile.isOverwriteProjectInfo() ? profile.getProjectName() : worktime.getProject().getName(),
+                        profile.isOverwriteProjectInfo() ? profile.getProjectCode() : worktime.getProject().getCode(),
                         null,
                         worktime.getDescription(),
                         null,
@@ -162,13 +172,13 @@ public class ExportUtil {
                 innobyte = new InnobyteMonthlyProfile(Integer.toString(i));
             else {
                 LocalDateTime start = LocalDateTime.of(day, time);
-                LocalDateTime end = LocalDateTime.of(day, time.plusMinutes((workMinutes)));
+                LocalDateTime end = LocalDateTime.of(day, time.plusMinutes(workMinutes).plusMinutes(lunchMinutes));
 
                 innobyte = new InnobyteMonthlyProfile(
                         Integer.toString(i),
                         formatters.get("timeMonthly").format(start),
                         formatters.get("timeMonthly").format(end),
-                        Double.toString((double)workMinutes / 60)
+                        Double.toString((double)(workMinutes + lunchMinutes) / 60)
                 );
             }
 

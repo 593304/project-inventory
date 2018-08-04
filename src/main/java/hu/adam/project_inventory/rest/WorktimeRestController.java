@@ -107,7 +107,7 @@ public class WorktimeRestController {
     @GetMapping("/export/innobyte/download")
     @ResponseBody
     private ResponseEntity<String> innobyteDownload() {
-        String csv = ExportUtil.getInnobyteString(lastWorktimes, lastProfile.getContact());
+        String csv = ExportUtil.getInnobyteString(lastWorktimes, lastProfile);
 
         lastWorktimes = null;
         lastProfile = null;

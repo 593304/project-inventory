@@ -8,3 +8,4 @@ target/
 *.log
 *.gz
 *.db
+*.ico

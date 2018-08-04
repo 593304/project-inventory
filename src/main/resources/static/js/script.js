@@ -1948,6 +1948,7 @@ projectInventory.module.worktime = (function() {
             $(selectors.worktimeExport + ' input[type="checkbox"]').prop('checked', false);
 
             $(selectors.worktimeExport + ' .error-row').addClass('hidden');
+            $(selectors.worktimeExport + ' .innobyte-monthly-export-button').addClass('hidden');
         },
 
         getDateTimeFrom = function(startDatetime, plusHours) {
